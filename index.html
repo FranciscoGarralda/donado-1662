@@ -1,0 +1,703 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Proyecto Donado 1662</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@500;600;700&family=Libre+Franklin:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: informe técnico-económico — veredicto arriba, después mercado, norma, opciones, proyecto, números, energía, materiales y plazos */
+:root{
+  --bg:#f4f5f6; --fg:#16181c; --muted:#5a626d; --line:#d7dbe0; --panel:#ffffff; --soft:#eceef1;
+  --accent:#1f4f7a; --accent-soft:#e2ebf4; --ok:#2e6a3d; --warn:#9a5214; --crit:#a3262a;
+  --ok-soft:#e3f0e6; --warn-soft:#f6eadc; --crit-soft:#f6e1e1;
+  --s1:#2a78d6; --s2:#eb6834; --grid:#e3e5e8; --axis:#9a9ea5;
+  --paper:#ffffff; --ink:#15171a; --ink2:#4b5159; --water:#a9d3ea; --green:#c5dcb6; --brick:#b5543a; --sun:#e9b949; --dim:#24578a;
+  --f-display:"Archivo Narrow","Arial Narrow",Arial,sans-serif;
+  --f-body:"Libre Franklin",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-data:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#101317; --fg:#e6e9ed; --muted:#9aa3ad; --line:#2a3038; --panel:#171b20; --soft:#1e2329;
+  --accent:#8fb9e2; --accent-soft:#1c2937; --ok:#86c595; --warn:#e3a465; --crit:#ef8185;
+  --ok-soft:#1b2a20; --warn-soft:#2e2316; --crit-soft:#321b1d; --s1:#3987e5; --s2:#d95926; --grid:#2a3038; --axis:#6f7680; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#101317; --fg:#e6e9ed; --muted:#9aa3ad; --line:#2a3038; --panel:#171b20; --soft:#1e2329;
+  --accent:#8fb9e2; --accent-soft:#1c2937; --ok:#86c595; --warn:#e3a465; --crit:#ef8185;
+  --ok-soft:#1b2a20; --warn-soft:#2e2316; --crit-soft:#321b1d; --s1:#3987e5; --s2:#d95926; --grid:#2a3038; --axis:#6f7680; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:15px;line-height:1.55;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1080px;margin:0 auto;padding-block:28px 64px;display:grid;gap:56px}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0}
+h1{font-size:clamp(30px,5vw,46px);line-height:1.05;font-weight:700}
+h2{font-size:26px;font-weight:700;line-height:1.15}
+h3{font-size:18px;font-weight:600}
+p{margin:0;max-width:70ch}
+a{color:var(--accent)}
+code{font-family:var(--f-data);font-size:13px}
+.eyebrow{font-family:var(--f-data);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.muted{color:var(--muted)} .small{font-size:13.5px}
+section{display:grid;gap:18px;min-width:0}
+.sechead{display:grid;gap:6px;border-top:2px solid var(--fg);padding-top:14px}
+header{display:grid;gap:16px}
+.verdict{border:2px solid var(--crit);background:var(--panel);padding:18px;display:grid;gap:10px}
+.verdict h2{color:var(--crit)}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));border:1px solid var(--line);background:var(--panel);margin:0}
+.facts div{padding:12px 14px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);display:grid;gap:2px;min-width:0}
+.facts dt{font-family:var(--f-data);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.facts dd{margin:0;font-family:var(--f-display);font-size:22px;font-weight:600;font-variant-numeric:tabular-nums;line-height:1.15}
+.facts dd small{display:block;font-family:var(--f-body);font-size:12.5px;font-weight:400;color:var(--muted)}
+.chip{display:inline-block;font-family:var(--f-data);font-size:11.5px;padding:2px 8px;border-radius:3px;white-space:nowrap}
+.c-crit{background:var(--crit-soft);color:var(--crit)} .c-warn{background:var(--warn-soft);color:var(--warn)} .c-info{background:var(--accent-soft);color:var(--accent)}
+.tbl{overflow-x:auto;border:1px solid var(--line);background:var(--panel)}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{text-align:left;padding:8px 11px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--f-data);font-size:11.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);font-weight:500;background:var(--soft)}
+td.r,th.r{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+tr.tot td{font-weight:600;border-top:2px solid var(--fg)}
+tr.hl td{background:var(--accent-soft)}
+td.neg{color:var(--crit)} td.pos{color:var(--ok)}
+.note{border-left:3px solid var(--accent);padding:4px 0 4px 14px;color:var(--muted);font-size:14px;max-width:78ch}
+.card{background:var(--panel);border:1px solid var(--line);padding:16px;display:grid;gap:12px;min-width:0}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(310px,1fr));gap:18px}
+.sheet{background:var(--paper);color:var(--ink);border:1px solid var(--line);display:grid;min-width:0;margin:0}
+.sheet-head{display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px 16px;padding:10px 14px;border-bottom:1px solid #d6d9dd;font-family:var(--f-data);font-size:12px;color:var(--ink2)}
+.sheet-head b{font-family:var(--f-display);font-size:16px;color:var(--ink);font-weight:700}
+.sheet-body{overflow-x:auto;padding:6px 6px 0}
+.sheet-body svg{display:block;width:100%;min-width:540px;height:auto}
+.sheet-body svg.wide{min-width:900px}
+.sheet-foot{padding:10px 14px 12px;border-top:1px solid #d6d9dd;font-size:13px;color:var(--ink2);display:grid;gap:4px}
+.sum{font-family:var(--f-data);font-size:12.5px;color:var(--ink)}
+.sheets{display:grid;gap:26px}
+ul.plain{margin:0;padding-left:18px;display:grid;gap:6px;max-width:76ch}
+.chart{overflow-x:auto} .chart svg{display:block;width:100%;height:auto;min-width:480px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:13px;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:7px} .legend i{display:inline-block;width:14px;height:4px;border-radius:2px}
+.ax{font-family:var(--f-data);font-size:11px;fill:var(--muted)}
+nav.toc{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line);padding-block:8px;display:flex;gap:4px 14px;flex-wrap:wrap;font-family:var(--f-data);font-size:12px}
+nav.toc a{color:var(--muted);text-decoration:none;white-space:nowrap} nav.toc a:hover,nav.toc a:focus-visible{color:var(--accent);text-decoration:underline}
+section{scroll-margin-top:64px}
+.docs{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+.docs figure{margin:0;border:1px solid var(--line);background:var(--panel);display:grid}
+.docs img{display:block;width:100%;height:auto;background:#ddd}
+.docs figcaption{padding:10px 12px;font-size:13px;color:var(--muted)}
+blockquote.carta{margin:0;border:1px solid var(--line);background:var(--panel);padding:16px 18px;font-size:14px;display:grid;gap:8px;max-width:80ch}
+.bars{overflow-x:auto} .bars svg{display:block;width:100%;min-width:520px;height:auto}
+footer{font-size:13px;color:var(--muted);display:grid;gap:6px}
+.pw{fill:var(--ink)} .pff{fill:var(--paper);stroke:var(--ink2);stroke-width:.9} .pf{fill:none;stroke:var(--ink2);stroke-width:.9}
+.pdash{fill:none;stroke:var(--ink2);stroke-width:.8;stroke-dasharray:4 3} .pwin{fill:var(--paper);stroke:var(--ink);stroke-width:.9}
+.pwater{fill:var(--water);stroke:#4f8fb3;stroke-width:.9} .pgreen{fill:var(--green);stroke:#7fa36b;stroke-width:.6} .pbrick{fill:var(--brick)}
+.prail{fill:none;stroke:var(--ink);stroke-width:2.2} .pdim{stroke:var(--dim);stroke-width:.8;fill:none}
+.pdt{fill:var(--dim);font-family:var(--f-data);font-size:11.5px} .plbl{fill:var(--ink);font-family:var(--f-display);font-size:13.5px;font-weight:600}
+.psub{fill:var(--ink2);font-family:var(--f-body);font-size:11px} .parrow{fill:none;stroke:var(--ink);stroke-width:1}
+.psun{stroke:var(--sun);stroke-width:1.6;fill:none} .ptxt-sun{fill:#8a6510;font-family:var(--f-body);font-size:11px}
+</style>
+</head>
+<body>
+
+
+<div class="wrap">
+<header>
+  <span class="eyebrow">Donado 1662 · Villa Ortúzar · CABA · SMP 049-061-031 · informe final, 17/10/2026</span>
+  <h1>Proyecto Donado 1662</h1>
+  <p>Análisis completo del terreno de 8,66 × 42,50 m con la normativa vigente (Código Urbanístico reformado por la Ley 6776 de 2024 y Código de Edificación), precios reales de la zona, costos de obra actualizados e impuestos. Reemplaza todos los estudios anteriores.</p>
+  <div class="verdict">
+    <span class="eyebrow">Veredicto</span>
+    <h2>Si se construye, la mejor opción son 3 casas de 3 plantas. Pero hoy el negocio no cierra</h2>
+    <p><b>El terreno vale ≈ USD 260.000</b> (rango 240–280 mil) y <b>el proyecto puede pagar entre 51.000 y 132.000</b> para ganar un 12 % neto.</p>
+    <p>Comparé más de 20 alternativas (ver "Comparativa"). La opción que mejor resiste son <b>3 casas en fila de 183 m²</b>, cada una con patio y pileta propios. Aun así, con el terreno a 260.000, la venta a 2.500 USD/m², la obra a 1.700 USD/m² con todo incluido e impuestos, <b>da −USD 10.000</b>. Vendiendo a 2.700/m² gana 4,3 %, cuando para que valga el riesgo hace falta un 12 %. <b>Recomendación: no comprar al valor de mercado.</b> Comprar solo si la LFI (línea de frente interno: el límite que fija la Ciudad para construir hacia el fondo del lote) sale favorable, la tasación confirma ≥ 2.700/m², la obra cotiza ≤ 1.700/m² y el terreno se consigue a ≤ 130.000. Con 4 socios hace falta más margen todavía (ver "Socios").</p>
+  </div>
+  <div class="card">
+    <h3>El problema en un gráfico</h3>
+    <div class="bars" id="ch-resumen"></div>
+    <span class="small muted">Miles de USD. El proyecto puede pagar entre 51 mil (venta a 2.500/m²) y 132 mil (venta a 2.700/m²) para ganar un 12 % neto.</span>
+  </div>
+  <dl class="facts">
+    <div><dt>Mejor tipología</dt><dd>3 casas<small>PB (planta baja) + 2 pisos, 183 m² c/u</small></dd></div>
+    <div><dt>Superficie vendible</dt><dd>549 m²<small>+ 3 patios con pileta</small></dd></div>
+    <div><dt>Venta base</dt><dd>USD 457.500<small>por casa, a 2.500/m²</small></dd></div>
+    <div><dt>Resultado con terreno a 260k</dt><dd>−USD 10.000<small>neto, a 2.500/m², después de impuestos</small></dd></div>
+    <div><dt>Precio de equilibrio</dt><dd>≈ 2.520/m²<small>con terreno a 260k y obra a 1.700</small></dd></div>
+    <div><dt>Plazo</dt><dd>≈ 26 meses<small>proyecto 6 + obra 13 + PH y ventas 7</small></dd></div>
+  </dl>
+</header>
+<nav class="toc" aria-label="Secciones">
+  <a href="#terreno-datos">Terreno</a><a href="#mercado">Mercado</a><a href="#terreno">Valor del terreno</a><a href="#norma">Normativa</a><a href="#comparativa">Comparativa</a><a href="#proyecto">Proyecto y planos</a><a href="#numeros">Números</a><a href="#costos">Costos de obra</a><a href="#socios">Socios</a><a href="#energia">Gas o eléctrica</a><a href="#materiales">Materiales</a><a href="#plazos">Plazos</a><a href="#pasos">Pendientes</a><a href="#glosario">Glosario</a><a href="#bases">Bases y fuentes</a>
+</nav>
+
+<section id="terreno-datos">
+  <div class="sechead"><span class="eyebrow">El terreno</span><h2>Qué hay y qué dicen los documentos</h2></div>
+  <div class="tbl"><table>
+    <thead><tr><th>Dato</th><th>Valor</th><th>Fuente</th><th>Estado</th></tr></thead>
+    <tbody>
+      <tr><td>Parcela</td><td>SMP (sección, manzana y parcela: el número catastral) 049-061-031, Comuna 15. Puertas Donado 1662 y 1664</td><td>API de Catastro del GCBA (Gobierno de la Ciudad de Buenos Aires)</td><td><span class="chip c-info">verificado</span></td></tr>
+      <tr><td>Medidas</td><td>8,66 × 42,50 m = 368 m², rectangular</td><td>Croquis de parcela, AGIP (Agencia de Recaudación de la Ciudad) 2008 y perímetro de manzana (coinciden). Ciudad 3D dice 360,4 m²: error del polígono digital</td><td><span class="chip c-warn">falta mensura (medición oficial de un agrimensor)</span></td></tr>
+      <tr><td>Construcción actual</td><td>PH de 2 unidades, 163 m², 1 planta. Firman 2 dueños</td><td>API Catastro</td><td><span class="chip c-info">verificado</span></td></tr>
+      <tr><td>Demolición</td><td>Permitida: Ley 3056 "Desestimado – Nota CAAP" (el Consejo Asesor de Asuntos Patrimoniales revisó la casa y no la protegió), no es APH (Área de Protección Histórica)</td><td>Ciudad 3D</td><td><span class="chip c-info">verificado</span></td></tr>
+      <tr><td>Afectaciones</td><td>Ninguna (riesgo hídrico, ensanche, apertura, LEP: línea de edificación particularizada)</td><td>Ciudad 3D</td><td><span class="chip c-info">verificado</span></td></tr>
+      <tr><td>Orientación</td><td>Frente al NE sobre Donado, fondo al SO. Lindero NO y lindero SE</td><td>Plano índice 2020</td><td><span class="chip c-info">verificado</span></td></tr>
+      <tr><td>Lindero SE (Donado 1660)</td><td>428 m² cubiertos sobre 368 m² de lote: construido casi hasta el fondo. Si la Ciudad traza una LFI, podría permitir la compensación de LFI (CU, Código Urbanístico, art. 6.4.2.2 b3)</td><td>API Catastro</td><td><span class="chip c-info">verificado</span></td></tr>
+      <tr><td>Lindero NO (Donado 1666)</td><td>PH de 2 unidades, 205 m², 1 planta</td><td>API Catastro</td><td><span class="chip c-info">verificado</span></td></tr>
+      <tr><td>Lindero de fondo</td><td>Mariano Acha 1631–1641, parcela grande</td><td>API Catastro</td><td><span class="chip c-warn">sin superficie</span></td></tr>
+      <tr><td><b>LFI</b></td><td>Ciudad 3D no muestra ninguna. El perímetro de manzana de 1981 tiene una nota a mano: <b>"Resolución 1569-82 – Línea Frente Interno"</b>, cuyo texto no está online. La manzana tiene 5 lados (Donado, Virrey del Pino, Mariano Acha, Av. Álvarez Thomas, Carbajal), así que la LFI la fija la DGIUR (Dirección General de Interpretación Urbanística de la Ciudad)</td><td>Perímetro de manzana, plano índice, CU 6.4.2.1</td><td><span class="chip c-crit">pendiente: trámite en TAD (Trámites a Distancia, la web oficial)</span></td></tr>
+    </tbody>
+  </table></div>
+  <div class="docs">
+    <figure><img src="documentos/perimetro_manzana.jpg" alt="Perímetro de manzana 049-061 de Catastro, 1981, con la nota Resolución 1569-82 Línea Frente Interno" loading="lazy"><figcaption>Perímetro de manzana (Catastro, 1981). Abajo a la izquierda, la nota "Resolución 1569-82 – Línea Frente Interno". La parcela es la 31.</figcaption></figure>
+    <figure><div style="padding:16px;display:grid;gap:10px;font-size:14px"><b style="font-family:var(--f-display);font-size:17px">Documentos originales</b><a href="documentos/croquis_parcela.pdf">Croquis de parcela (PDF): 8,66 × 42,50</a><a href="documentos/plano_indice.pdf">Plano índice de la manzana, 2020 (PDF)</a><a href="documentos/perimetro_manzana.jpg">Perímetro de manzana, 1981 (imagen completa)</a><span class="muted small">Bajados del servidor de Catastro del GCBA el 16/10/2026.</span></div></figure>
+  </div>
+</section>
+
+<section id="mercado">
+  <div class="sechead"><span class="eyebrow">Mercado</span><h2>Cuánto vale el m² en la zona y por qué</h2></div>
+  <div class="tbl"><table>
+    <thead><tr><th>Producto</th><th class="r">USD/m²</th><th>Referencia</th></tr></thead>
+    <tbody>
+      <tr><td>PH usados de 3 amb en Villa Ortúzar</td><td class="r">1.600–2.300</td><td>Zonaprop: 19 avisos, 16/10/2026 (m² totales)</td></tr>
+      <tr class="hl"><td>PH a estrenar, 4 amb, 110 m² cub. (Holmberg 1659, a una cuadra)</td><td class="r">2.500 cub.</td><td>El único comparable directo: USD 275.000 con cochera</td></tr>
+      <tr><td>Pozo en Villa Ortúzar (mediana de 22 avisos)</td><td class="r">2.346</td><td>Investigación externa, oct. 2026</td></tr>
+      <tr><td>Casas nuevas grandes (140–230 m²), Villa Urquiza y Chacarita</td><td class="r">1.900–2.400</td><td>Zonaprop, 32 avisos a estrenar</td></tr>
+      <tr><td>Casas y PH premium en Colegiales y Belgrano</td><td class="r">2.400–3.500</td><td>Céspedes 3000, Jorge Newbery 3300, Conde 1468</td></tr>
+      <tr><td>Cierre real de usados en CABA (agosto 2026)</td><td class="r">2.150</td><td>Colegio de Escribanos; brecha oferta/cierre −4,8 %</td></tr>
+      <tr class="tot"><td>Precio realista para estas casas nuevas con pileta</td><td class="r">2.400–2.600</td><td>Base del informe: 2.500. Hace falta una tasación para confirmarlo</td></tr>
+    </tbody>
+  </table></div>
+  <ul class="plain">
+    <li><b>Por qué sube:</b> el corredor verde Donado–Holmberg (la ex traza de la AU3) se está consolidando, el lote está a pasos de Belgrano R y Colegiales, que son más caros, y tiene el subte B (Tronador y De los Incas) cerca.</li>
+    <li><b>Por qué no llega a Colegiales:</b> Villa Ortúzar sigue siendo un barrio de PH viejos y casas bajas. No hay casas grandes nuevas publicadas, así que el precio de este producto no está probado.</li>
+    <li><b>Por qué las casas grandes no valen más por m²:</b> el ticket (≈ USD 450.000) reduce mucho la cantidad de compradores. En la zona se pagan igual o menos por m² que los PH de 100 m².</li>
+  </ul>
+</section>
+
+<section id="terreno">
+  <div class="sechead"><span class="eyebrow">Terreno</span><h2>Cuánto vale el terreno</h2></div>
+  <div class="tbl"><table>
+    <thead><tr><th>Método</th><th class="r">Valor USD</th><th>Cómo se calcula</th></tr></thead>
+    <tbody>
+      <tr><td>Lotes publicados en la zona, ajustados</td><td class="r">≈ 376.000</td><td>Mediana de 8 lotes: 1.775/m². Ajustes: negociación ×0,88, tamaño ×0,90, forma larga y angosta ×0,90, LFI sin definir ×0,85, 2 dueños ×0,95 → 1.021/m² × 368 m². Es lo que <i>piden</i> otros, no lo que se paga</td></tr>
+      <tr><td>Uso actual: 2 PH viejos (163 m²)</td><td class="r">196.000–245.000</td><td>163 m² × 1.200–1.500/m² (PH usados a reciclar en la zona). Es el piso: los dueños pueden vender así sin demoler</td></tr>
+      <tr><td>Lo que paga un edificio (desarrollador profesional)</td><td class="r">≈ 115.000</td><td>Residual con obra a 1.500/m², venta a 2.550/m² y LFI favorable. Va de −200.000 a 431.000 según costo y precio</td></tr>
+      <tr><td>Lo que pagan las 3 casas de este proyecto</td><td class="r">51.000–132.000</td><td>Residual para ganar 12 % neto, con venta a 2.500–2.700/m² y obra a 1.700/m²</td></tr>
+      <tr class="tot"><td>Valor de mercado estimado</td><td class="r">≈ 240.000–280.000</td><td>Valor central ≈ <b>260.000</b>: un poco más de lo que sacarían vendiéndolo como 2 PH usados y bastante menos de lo que se pide por lotes parecidos. Para demoler y construir, con los costos actuales, nadie puede pagar mucho más</td></tr>
+    </tbody>
+  </table></div>
+  <p class="note">Con el terreno a 260.000, el proyecto de 3 casas da −10.000 netos a 2.500/m² y +57.000 (4,3 %) a 2.700/m². A 220.000 da +19.000 (1,5 %) y +83.000 (6,6 %). Ningún caso llega al 12 % que haría atractivo el negocio. El terreno vale más de lo que este proyecto puede pagar.</p>
+</section>
+
+<section id="norma">
+  <div class="sechead"><span class="eyebrow">Normativa</span><h2>Qué se puede construir</h2></div>
+  <div class="tbl"><table>
+    <thead><tr><th>Regla</th><th>Artículo</th><th>Efecto en el lote</th></tr></thead>
+    <tbody>
+      <tr><td>USAB 2 (Unidad de Sustentabilidad de Altura Baja 2, la zona del lote): plano límite (altura máxima) de 14,60 m; lo edificable lo limita la LFI</td><td>CU 6.2.5</td><td>Hasta PB + 4 pisos (5 × 2,88 = 14,40 m)</td></tr>
+      <tr><td>Manzana de 5 lados: la LFI la fija la DGIUR. Si queda exenta, hay que dejar 4 m libres al fondo</td><td>CU 6.4.2.1 · 6.4.2.4</td><td><b>Supuesto del proyecto: edificable hasta 38,50 m.</b> Pendiente del trámite en TAD</td></tr>
+      <tr><td>Living (local de 1ª clase, donde se pasa el día): a espacio urbano (aire libre amplio: la calle, el fondo libre o un patio grande). Dentro del lote: lado ≥ 4 m y altura/distancia ≤ 1,5</td><td>CE (Código de Edificación) 3.3.2.3 · CU 6.4.4.2 f</td><td>Con 3 plantas (9,04 m): patio de ≥ 6,03 m entre casas</td></tr>
+      <tr><td>Dormitorios (locales de 3ª clase): patio vertical (patio interno de al menos 20 m² y 4 m de lado) y ventana a ≥ 5 m del muro de enfrente</td><td>CE 3.8.9.1</td><td>Fondo libre de ≥ 5 m</td></tr>
+      <tr><td>Pasillo: 1,10 m (lote ≤ 8,66 m, 31–50 personas), con ensanches de Ø 1,50 en los extremos y cada 20 m</td><td>CE 3.4.7.3</td><td>Las entradas de las casas, retiradas 0,40 m, hacen de ensanche</td></tr>
+      <tr><td>Escalera interna: alzada ≤ 0,18, pedada ≥ 0,26, ancho 0,90, descanso 0,95</td><td>CE 3.4.6.1</td><td>Piso a piso 2,88 = 16 × 0,18</td></tr>
+      <tr><td>Plusvalía (cargo de la Ciudad por construir más de lo que permitía el código anterior): solo por encima de ≈ 720 m²</td><td>Código Fiscal</td><td>549 m² → USD 0</td></tr>
+      <tr><td>Compensación de LFI en USAB: se puede pasar la LFI hasta 4 m de ancho si los linderos construyeron más allá</td><td>CU 6.4.2.2 b3</td><td>Posible a favor: el lindero SE está construido hasta el fondo</td></tr>
+      <tr><td>Patio vertical en USAB 2: 20 m², lado 4 m. En patios y espacio urbano solo elementos plegables</td><td>CU 6.4.4.4.1 · 6.4.4.1</td><td>Nada de pérgolas fijas sobre los patios</td></tr>
+      <tr><td>Regla de 40 m, ascensor futuro y cocheras</td><td>CE 3.4.7.5 · 3.8.9.1 · 3.14.8.1</td><td>No aplican</td></tr>
+    </tbody>
+  </table></div>
+  <p class="note">Por qué no sirven los proyectos anteriores: los 6 PH con patio lateral de 2 m no cumplen. Hacen falta 5 m hasta el muro de enfrente para los dormitorios y patios de 4 a 6 m para el living. En un lote de 8,66 m, un patio lateral así deja una casa de 2,11 m de ancho. La única forma que cumple son <b>casas en fila de lado a lado, con patio entre casas</b>.</p>
+</section>
+
+<section id="comparativa">
+  <div class="sechead"><span class="eyebrow">Comparativa</span><h2>Por qué 3 casas y por qué no las otras</h2></div>
+  <p>Mismas reglas para todas las opciones: terreno a 260.000, obra a 1.700/m² todo incluido (1.800 en una planta, 1.750 en cuatro), 100 % eléctricas, impuestos de venta habitual y precio de venta según el tamaño de cada casa, porque las casas grandes se venden a menos por m² (2.500 hasta 110 m², 2.450 hasta 150 m², 2.400 por encima).</p>
+  <div class="card"><h3>Resultado neto de cada opción</h3><div class="bars" id="ch-opciones"></div><span class="small muted">En miles de USD, después de impuestos. En el escenario base de la sección "Números", las 3 casas se venden a 2.500/m² y dan −10.000.</span></div>
+  <div class="tbl"><table>
+    <thead><tr><th>Opción</th><th>¿Cumple la norma?</th><th class="r">m² vendibles</th><th class="r">Precio por casa</th><th class="r">Capital</th><th class="r">Neto</th><th>Venta</th><th>Veredicto</th></tr></thead>
+    <tbody>
+      <tr class="hl"><td><b>3 casas de 3 plantas (183 m²)</b></td><td>Sí</td><td class="r">549</td><td class="r">439–457 mil</td><td class="r">1,31 M</td><td class="r neg">−56k a 2.400 · −10k a 2.500</td><td>Producto único en Villa Ortúzar; ticket alto</td><td><b>Elegida</b>: la mejor relación entre superficie y producto</td></tr>
+      <tr><td>3 casas de 4 plantas (207 m²)</td><td>Sí</td><td class="r">620</td><td class="r">496 mil</td><td class="r">1,47 M</td><td class="r neg">−54k</td><td>Difícil: 4 pisos por escalera sin ascensor y ticket de casi 500 mil</td><td>Empata en plata, pero es peor producto y necesita más capital</td></tr>
+      <tr><td>4 casas de 3 plantas (104 m²)</td><td>Sí</td><td class="r">417</td><td class="r">261 mil</td><td class="r">1,08 M</td><td class="r neg">−84k</td><td>La más fácil de vender</td><td>Los 3 patios de 6 m entre casas se comen 18 m del lote</td></tr>
+      <tr><td>3 casas de 2 plantas (132 m²)</td><td>Sí</td><td class="r">395</td><td class="r">323 mil</td><td class="r">1,03 M</td><td class="r neg">−105k</td><td>Buena</td><td>Se desperdicia altura: el terreno pesa más por m²</td></tr>
+      <tr><td>4 casas de 2 plantas (80 m²)</td><td>Sí</td><td class="r">322</td><td class="r">201 mil</td><td class="r">0,91 M</td><td class="r neg">−132k</td><td>Buena</td><td>Idem, y 4 cocinas y baños para pocos m²</td></tr>
+      <tr><td>3 casas de 1 planta (66 m²)</td><td>Sí</td><td class="r">197</td><td class="r">165 mil</td><td class="r">0,69 M</td><td class="r neg">−215k</td><td>Buena</td><td>Una planta no es más barata por m²: misma platea y mismo techo para un tercio de superficie</td></tr>
+      <tr><td>4 casas de 1 planta (40 m²)</td><td>Sí</td><td class="r">161</td><td class="r">101 mil</td><td class="r">0,63 M</td><td class="r neg">−240k</td><td>Monoambientes</td><td>La peor: los patios ocupan casi todo el lote</td></tr>
+      <tr><td>6 PH con patio lateral de 2 m</td><td><b>No</b></td><td class="r">590</td><td class="r">246 mil</td><td class="r">—</td><td class="r">—</td><td>—</td><td>No se aprueba: dormitorios a 2,15 m del muro (piden 5 m) y living sin espacio urbano</td></tr>
+      <tr><td>Edificio PB + 4 con ascensor</td><td>Sí</td><td class="r">≈ 1.400</td><td class="r">—</td><td class="r">2,4–3,0 M</td><td class="r">Paga ≈ 115k por el terreno</td><td>Compite con todo el pozo (unidades que se venden antes de construirse) de la zona (2.346/m²)</td><td>Paga el terreno solo con obra a 1.400 y venta ≥ 2.700. Triple de capital y 24–30 meses</td></tr>
+      <tr><td>Comprar, reciclar los 2 PH y vender</td><td>Sí</td><td class="r">163</td><td class="r">175 mil</td><td class="r">0,42 M</td><td class="r neg">−83k</td><td>Buena</td><td>Reciclar a ~800/m² y vender a 2.150/m² no recupera el terreno</td></tr>
+      <tr><td>No comprar este terreno</td><td>—</td><td class="r">—</td><td class="r">—</td><td class="r">0</td><td class="r">0</td><td>—</td><td><b>Hoy, la decisión más rentable.</b> Seguir solo si se cumplen las condiciones de "Pendientes"</td></tr>
+    </tbody>
+  </table></div>
+  <h3>Cómo busqué la mejor opción: todas las combinaciones</h3>
+  <p class="small">La norma fija el ancho del patio entre casas según la altura (altura/distancia ≤ 1,5, y nunca menos de 5 m para los dormitorios). Probé todas las combinaciones de cantidad de casas y de plantas que entran en los 42,50 m. Resultado neto en miles de USD, con terreno a 260.000:</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Plantas · patio entre casas</th><th class="r">2 casas</th><th class="r">3 casas</th><th class="r">4 casas</th><th class="r">5 casas</th></tr></thead>
+    <tbody>
+      <tr><td>1 planta · 5,05 m</td><td class="r">234 m² · −200</td><td class="r">197 m² · −215</td><td class="r">161 m² · −240</td><td class="r">no entra</td></tr>
+      <tr><td>2 plantas · 5,05 m</td><td class="r">468 m² · −84*</td><td class="r">395 m² · −105</td><td class="r">322 m² · −132</td><td class="r">no entra</td></tr>
+      <tr class="hl"><td>3 plantas · 6,05 m</td><td class="r">681 m² · +4*</td><td class="r"><b>549 m² · −56 (−10 a 2.500)</b></td><td class="r">417 m² · −84</td><td class="r">no entra</td></tr>
+      <tr><td>4 plantas · 7,97 m</td><td class="r">852 m² · +28*</td><td class="r">620 m² · −54</td><td class="r">no entra</td><td class="r">no entra</td></tr>
+    </tbody>
+  </table><p class="small muted" style="padding:8px 11px">* Las opciones de 2 casas son casas de 234 a 426 m². Las de 3 y 4 plantas dan positivo solo en el papel: serían casas de 340 a 426 m² (USD 800.000 a 1.000.000) en Villa Ortúzar, donde no hay compradores para ese ticket. Con un precio realista para ese tamaño (≈ 2.000/m²) pierden más de 200.000.</p></div>
+  <div class="tbl"><table>
+    <thead><tr><th>Otras ideas que también probé</th><th class="r">m² vendibles</th><th class="r">Neto</th><th>Por qué no</th></tr></thead>
+    <tbody>
+      <tr><td>3 casas con alturas alternadas (3, 2 y 3 plantas): patios de 5,07 m</td><td class="r">526</td><td class="r neg">−44k</td><td>Patios más angostos, pero se pierde una planta entera: queda igual o peor que 3 casas de 3 plantas</td></tr>
+      <tr><td>4 casas con alturas alternadas (3, 2, 3 y 2 plantas)</td><td class="r">401</td><td class="r neg">−92k</td><td>Idem, con una cocina y dos baños más</td></tr>
+      <tr><td>Unidades apiladas PB + 1 (6 departamentos en 3 bloques, sin ascensor)</td><td class="r">371</td><td class="r neg">−105k</td><td>La escalera común se come superficie y los departamentos se venden peor que las casas</td></tr>
+      <tr><td>Unidades apiladas PB + 2 (9 departamentos, con ascensor)</td><td class="r">495</td><td class="r neg">−166k</td><td>El ascensor y la escalera común en bloques chicos no se pagan</td></tr>
+      <tr><td>Construir las 3 casas y alquilarlas</td><td class="r">549</td><td class="r">4–5 % bruto anual</td><td>El costo total (≈ 2.290/m² con el terreno) es casi lo mismo que vale en el mercado: no se crea valor, y el alquiler rinde menos que un fideicomiso (inversión administrada por un tercero) en dólares</td></tr>
+    </tbody>
+  </table></div>
+  <ul class="plain">
+    <li><b>¿Y si se hacen menos PH con el esquema anterior (5, 4 o 3 con patio al costado)?</b> No se arregla. El problema no es la cantidad sino el ancho: cada PH tiene su patio al costado, sobre el lindero NO, y en un lote de 8,66 m ese patio no puede tener más de 2 m. La norma pide 5 m entre la ventana del dormitorio y el muro de enfrente, y 4 a 6 m para el living. Con un patio lateral de 5 m, la casa quedaría de 2,11 m de ancho (8,66 − 0,15 − 5,00 − 0,15 − 1,10 − 0,15). La única forma de que cumpla con menos PH es separarlos con patios <i>entre</i> casas, que es justamente el esquema de casas en fila de esta tabla.</li>
+    <li><b>¿Por qué no más casas?</b> Cada casa extra necesita un patio de 6 m (la norma exige altura/distancia ≤ 1,5). Con 4 casas se pierden 6 m de lote y bajan los m² vendibles de 549 a 417.</li>
+    <li><b>¿Por qué no PH de una planta, si parecen más baratos?</b> La obra por m² no baja: la platea, el techo y las instalaciones son los mismos para un tercio de superficie. Y con patios de 5 m entre casas, en una planta entran apenas 197 m² vendibles.</li>
+    <li><b>¿Por qué no un edificio, si la norma deja 14,60 m?</b> Necesita ascensor, constructora y 2–3 M de capital, compite con el pozo de la zona a 2.346/m² y es lo más expuesto a la LFI. Con costos reales paga ≈ 115.000 por el terreno, menos que su valor.</li>
+    <li><b>¿Por qué las casas grandes no se venden más caras por m²?</b> Las casas nuevas de 140–230 m² en Villa Urquiza y Chacarita se publican a 1.900–2.400/m², contra 2.500 del PH de 110 m² en Holmberg 1659. El ticket alto reduce los compradores.</li>
+  </ul>
+</section>
+
+<section id="proyecto">
+  <div class="sechead"><span class="eyebrow">Proyecto</span><h2>3 casas en fila, cada una con patio y pileta</h2></div>
+  <p>Cada casa ocupa el ancho del lote (menos el pasillo), tiene ventanas al frente y al fondo (ventilación cruzada) y un patio propio de 6,05 × 7,11 m detrás. La casa 1 da a la calle; la 3 tiene además el fondo libre y la franja final del pasillo. Programa: <b>PB social</b> (cocina-comedor adelante, living al patio), <b>1º suite</b> (dormitorio principal, vestidor, escritorio y baño), <b>2º chicos</b> (2 dormitorios, playroom y baño). La estructura es de hormigón armado con losas de viguetas pretensadas y cerramientos de ladrillo hueco.</p>
+  <div class="sheets">
+    <figure class="sheet"><div class="sheet-head"><b>Lámina 1 · Implantación</b><span>Lote 8,66 × 42,50 · 3 casas</span></div><div class="sheet-body" id="s-imp"></div>
+      <figcaption class="sheet-foot"><span class="sum">Largo: 3 × 8,40 casas + 2 × 6,05 patios + 5,05 fondo + 0,15 lindero = 42,50</span><span class="sum">Ancho: 0,15 lindero NO + 7,11 casa + 0,15 muro + 1,10 pasillo + 0,15 lindero SE = 8,66</span><span>Las entradas están retiradas 0,40 m: 1,10 + 0,40 = 1,50 m de ensanche, a 0,80 m, 15,25 m y 29,70 m de la calle (separación ≤ 20 m). La casa 3 termina a 37,30 m, antes del límite de 38,50 m.</span></figcaption></figure>
+    <figure class="sheet"><div class="sheet-head"><b>Lámina 2 · Planta baja</b><span>Casa tipo · 61,0 m² cubiertos + patio 43 m²</span></div><div class="sheet-body" id="s-pb"></div>
+      <figcaption class="sheet-foot"><span class="sum">Profundidad: 3,00 cocina-comedor + 0,10 + 1,80 núcleo + 0,10 + 3,00 living = 8,00</span><span class="sum">Núcleo: 2,77 escalera + 1,53 hall + 0,10 + 2,71 toilette y lavadero = 7,11</span><span>Cocina lineal sobre el lindero NO, en el orden que pediste al principio: cocina → mesada → bacha → heladera. Ventanal de 5,20 × 2,40 al patio. Pileta de 2,00 × 4,00 en el rincón del lindero NO.</span></figcaption></figure>
+    <figure class="sheet"><div class="sheet-head"><b>Lámina 3 · Primer piso (suite)</b><span>61,0 m² cubiertos</span></div><div class="sheet-body" id="s-p1"></div>
+      <figcaption class="sheet-foot"><span class="sum">Frente: 3,50 escritorio + 0,10 + 3,51 vestidor = 7,11</span><span class="sum">Hall: 0,03 + 0,70 puerta + 0,10 + 0,70 puerta = 1,53</span><span>Toda la planta es de los padres: dormitorio de 21,3 m² al patio, vestidor, escritorio y baño de 4,9 m².</span></figcaption></figure>
+    <figure class="sheet"><div class="sheet-head"><b>Lámina 4 · Segundo piso (chicos)</b><span>61,0 m² cubiertos</span></div><div class="sheet-body" id="s-p2"></div>
+      <figcaption class="sheet-foot"><span class="sum">Frente: 3,50 dormitorio 2 + 0,10 + 3,51 dormitorio 3 = 7,11</span><span>Playroom (o dormitorio 4) de 21,3 m² al patio, baño compartido, claraboya sobre la escalera.</span></figcaption></figure>
+    <figure class="sheet"><div class="sheet-head"><b>Lámina 5 · Corte longitudinal</b><span>De la calle al fondo</span></div><div class="sheet-body" id="s-corte"></div>
+      <figcaption class="sheet-foot"><span class="sum">Alturas: 3 × 2,88 + 0,40 parapeto = 9,04 · relación h/d (altura de la casa ÷ ancho del patio) = 9,04 / 6,05 = 1,49 ≤ 1,5 ✓</span><span>Sol a las 12 h, en ángulo proyectado sobre el eje del lote: 41° en invierno y 82° en verano. En invierno los patios quedan en sombra al mediodía y el sol entra a la planta baja de la casa siguiente desde los 3,7 m de altura. En verano los patios tienen sol pleno.</span></figcaption></figure>
+  </div>
+  <div class="tbl"><table>
+    <thead><tr><th>Planta</th><th>Local</th><th class="r">Medidas (m)</th><th class="r">m²</th></tr></thead>
+    <tbody>
+      <tr><td>PB</td><td>Cocina-comedor</td><td class="r">7,11 × 3,00</td><td class="r">21,3</td></tr>
+      <tr><td>PB</td><td>Living</td><td class="r">7,11 × 3,00</td><td class="r">21,3</td></tr>
+      <tr><td>PB</td><td>Toilette y lavadero</td><td class="r">2,71 × 1,80</td><td class="r">4,9</td></tr>
+      <tr><td>1º</td><td>Dormitorio principal</td><td class="r">7,11 × 3,00</td><td class="r">21,3</td></tr>
+      <tr><td>1º</td><td>Escritorio · Vestidor</td><td class="r">3,50 × 3,00 · 3,51 × 3,00</td><td class="r">10,5 · 10,5</td></tr>
+      <tr><td>1º</td><td>Baño</td><td class="r">2,71 × 1,80</td><td class="r">4,9</td></tr>
+      <tr><td>2º</td><td>Dormitorio 2 · Dormitorio 3</td><td class="r">3,50 × 3,00 · 3,51 × 3,00</td><td class="r">10,5 · 10,5</td></tr>
+      <tr><td>2º</td><td>Playroom o dormitorio 4</td><td class="r">7,11 × 3,00</td><td class="r">21,3</td></tr>
+      <tr><td>2º</td><td>Baño</td><td class="r">2,71 × 1,80</td><td class="r">4,9</td></tr>
+      <tr><td>—</td><td>Patio con pileta (descubierto)</td><td class="r">7,11 × 6,05</td><td class="r">43,0</td></tr>
+      <tr class="tot"><td colspan="2">Cubierto por casa (7,26 × 8,40 × 3)</td><td class="r">61,0 × 3</td><td class="r">183,0</td></tr>
+      <tr class="tot"><td colspan="2">Cubierto total, 3 casas</td><td class="r">3 × 183,0</td><td class="r">549,0</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="numeros">
+  <div class="sechead"><span class="eyebrow">Números</span><h2>Cuánto entra, cuánto sale, cuánto queda</h2></div>
+  <div class="two">
+    <div class="tbl"><table>
+      <thead><tr><th>Escenario base (100 % eléctrica)</th><th class="r">USD</th></tr></thead>
+      <tbody>
+        <tr><td>Venta: 549 m² × 2.500</td><td class="r">1.372.500</td></tr>
+        <tr><td>− Terreno a valor de mercado (260.000) + 4 % de gastos de compra</td><td class="r">−270.400</td></tr>
+        <tr><td>− Obra: 549 m² × 1.700 todo incluido</td><td class="r">−933.300</td></tr>
+        <tr><td>− Climatización, agua caliente y cocina (3 × 6.900)</td><td class="r">−20.700</td></tr>
+        <tr><td>− Demolición, permisos, derechos, mensura, PH</td><td class="r">−31.149</td></tr>
+        <tr><td>− Comercialización 4 %</td><td class="r">−54.900</td></tr>
+        <tr><td>Resultado antes de impuestos</td><td class="r">62.051</td></tr>
+        <tr><td>− Ingresos Brutos 3 %</td><td class="r">−41.175</td></tr>
+        <tr><td>− IVA neto (10,5 % sobre la obra, con crédito de materiales)</td><td class="r">−31.206</td></tr>
+        <tr class="tot"><td>Resultado neto</td><td class="r neg">−10.330</td></tr>
+        <tr><td>Con gas (instalación de 9.100 por casa con aire)</td><td class="r neg">−16.414</td></tr>
+      </tbody>
+    </table></div>
+    <div class="tbl"><table>
+      <thead><tr><th>Obra USD/m²</th><th class="r">Venta 2.300</th><th class="r">2.500</th><th class="r">2.700</th><th class="r">2.900</th><th class="r">3.100</th></tr></thead>
+      <tbody>
+        <tr><td>1.600</td><td class="r neg">−4,1 %</td><td class="r">2,2 %</td><td class="r">7,3 %</td><td class="r pos">12,4 %</td><td class="r pos">17,4 %</td></tr>
+        <tr class="hl"><td>1.700</td><td class="r neg">−7,8 %</td><td class="r neg">−0,8 %</td><td class="r">4,3 %</td><td class="r">9,2 %</td><td class="r pos">14,0 %</td></tr>
+        <tr><td>1.800</td><td class="r neg">−11,2 %</td><td class="r neg">−4,5 %</td><td class="r">1,6 %</td><td class="r">6,2 %</td><td class="r">10,9 %</td></tr>
+        <tr><td>2.000</td><td class="r neg">−17,3 %</td><td class="r neg">−11,0 %</td><td class="r neg">−4,8 %</td><td class="r">1,0 %</td><td class="r">5,3 %</td></tr>
+      </tbody>
+    </table><p class="small muted" style="padding:8px 11px">Resultado neto sobre el costo total, con terreno a 260.000. En verde, los casos que superan el 12 %.</p></div>
+  </div>
+  <div class="card"><h3>Adónde va cada dólar de la venta (escenario base)</h3><div class="bars" id="ch-cascada"></div><span class="small muted">Miles de USD. Venta a 2.500/m², obra a 1.700/m², terreno a 260.000.</span></div>
+  <h3>Cuánto se puede pagar por el terreno según la venta y la obra</h3>
+  <div class="tbl"><table>
+    <thead><tr><th>Obra USD/m²</th><th class="r">Venta 2.300</th><th class="r">2.500</th><th class="r">2.700</th><th class="r">2.900</th><th class="r">3.100</th></tr></thead>
+    <tbody>
+      <tr><td>1.600</td><td class="r">23.000</td><td class="r">104.000</td><td class="r">185.000</td><td class="r">266.000</td><td class="r">347.000</td></tr>
+      <tr class="hl"><td>1.700</td><td class="r neg">no paga</td><td class="r">51.000</td><td class="r">132.000</td><td class="r">213.000</td><td class="r">294.000</td></tr>
+      <tr><td>1.800</td><td class="r neg">no paga</td><td class="r neg">no paga</td><td class="r">78.000</td><td class="r">159.000</td><td class="r">240.000</td></tr>
+      <tr><td>2.000</td><td class="r neg">no paga</td><td class="r neg">no paga</td><td class="r neg">no paga</td><td class="r">52.000</td><td class="r">133.000</td></tr>
+    </tbody>
+  </table><p class="small muted" style="padding:8px 11px"><b>Precio máximo del terreno</b> para ganar un 12 % neto sobre el costo después de impuestos. "No paga": no llega al 12 % ni con el terreno regalado.</p></div>
+  <p class="note">El negocio depende casi todo del precio de venta: cada USD 100/m² mueve unos USD 40.000 netos. El precio de equilibrio con terreno a 260.000 es de ≈ 2.410/m² con obra a 1.600, ≈ 2.520 con obra a 1.700 y ≈ 2.630 con obra a 1.800. Ganancias (25–35 %) solo se paga si hay resultado positivo. Supuesto de impuestos: venta de las 3 casas por los socios como actividad habitual.</p>
+</section>
+
+<section id="costos">
+  <div class="sechead"><span class="eyebrow">Costos de obra</span><h2>Arquitecto, mano de obra y materiales: adónde van los USD 933.300 de la obra</h2></div>
+  <p>La obra se presupuesta a <b>1.700 USD/m² con todo incluido</b> (549 m² × 1.700 = 933.300). Ese número junta cinco cosas: materiales, mano de obra de los gremios, honorarios de los profesionales e imprevistos. El terreno, los impuestos y la comisión de venta van aparte (ver "Números").</p>
+  <div class="card"><h3>Cómo se reparte la obra</h3><div class="bars" id="ch-costos"></div><span class="small muted">Miles de USD, para las 3 casas.</span></div>
+  <div class="tbl"><table>
+    <thead><tr><th>Rubro</th><th>Quién lo cobra</th><th class="r">3 casas</th><th class="r">Por casa</th><th class="r">USD/m²</th><th class="r">% de la obra</th></tr></thead>
+    <tbody>
+      <tr><td>Materiales</td><td>Corralones, hormigonera, carpinterías, sanitarios</td><td class="r">450.276</td><td class="r">150.092</td><td class="r">820</td><td class="r">48,2 %</td></tr>
+      <tr><td><b>Mano de obra</b></td><td>Gremios por contrato cerrado (detalle abajo)</td><td class="r">368.408</td><td class="r">122.803</td><td class="r">671</td><td class="r">39,5 %</td></tr>
+      <tr><td><b>Arquitecto</b>: proyecto, planos y permisos</td><td>Arquitecto matriculado (firma ante la Ciudad)</td><td class="r">32.747</td><td class="r">10.916</td><td class="r">60</td><td class="r">3,5 %</td></tr>
+      <tr><td><b>Dirección de obra</b></td><td>Maestro mayor de obras (coordina gremios, compras y calidad)</td><td class="r">32.747</td><td class="r">10.916</td><td class="r">60</td><td class="r">3,5 %</td></tr>
+      <tr><td>Cálculo estructural</td><td>Ingeniero calculista</td><td class="r">8.187</td><td class="r">2.729</td><td class="r">15</td><td class="r">0,9 %</td></tr>
+      <tr><td>Imprevistos</td><td>Reserva (5 % del costo directo)</td><td class="r">40.934</td><td class="r">13.645</td><td class="r">75</td><td class="r">4,4 %</td></tr>
+      <tr class="tot"><td>Obra</td><td></td><td class="r">933.300</td><td class="r">311.100</td><td class="r">1.700</td><td class="r">100 %</td></tr>
+    </tbody>
+  </table></div>
+  <div class="two">
+    <div class="card"><h3>Mano de obra por gremio</h3><div class="bars" id="ch-gremios"></div><span class="small muted">Miles de USD, 3 casas. Reparto típico de una obra de mampostería y hormigón: hay que confirmarlo con presupuestos.</span></div>
+    <div class="tbl"><table>
+      <thead><tr><th>Otros profesionales y trámites</th><th class="r">USD</th></tr></thead>
+      <tbody>
+        <tr><td>Derechos de construcción GCBA (549 m² × ≈ 11,2)</td><td class="r">6.149</td></tr>
+        <tr><td>Demolición de 163 m² y retiro de escombros</td><td class="r">6.000</td></tr>
+        <tr><td>Permiso de demolición</td><td class="r">500</td></tr>
+        <tr><td>Agrimensor: mensura y plano de PH, más tasas de Catastro</td><td class="r">2.000</td></tr>
+        <tr><td>Escribano: reglamento de PH</td><td class="r">7.300</td></tr>
+        <tr><td>Gestoría, final de obra y otros trámites</td><td class="r">9.200</td></tr>
+        <tr class="tot"><td>Total (línea "permisos, demolición, mensura" de Números)</td><td class="r">31.149</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+  <ul class="plain small">
+    <li><b>Honorarios:</b> los estudios de CABA cobran entre 8 y 12 % de la obra por proyecto y dirección (proyecto 3–5 %, dirección 4–6 %; Estudio Lat, 2026). Acá se usa 9 % del costo directo: 4 % arquitecto, 4 % dirección y 1 % calculista. Si Francisco o su socio dirigen la obra, esa parte se puede ahorrar o cobrar como gestión.</li>
+    <li><b>Materiales y mano de obra:</b> en una obra por administración se reparte cerca de 55 % materiales y 45 % mano de obra del costo directo. Es una estimación: el número firme sale del presupuesto del maestro mayor de obras, gremio por gremio.</li>
+    <li><b>Climatización y agua caliente</b> (6.900 por casa en la versión eléctrica) va aparte, en "Gas o eléctrica".</li>
+  </ul>
+</section>
+
+<section id="socios">
+  <div class="sechead"><span class="eyebrow">Socios</span><h2>Cuatro socios: quién pone qué y quién se lleva qué</h2></div>
+  <p><b>¿Vendiendo las 3 casas se cubre todo?</b> Casi justo. A 2.500/m² las ventas suman USD 1.372.500: pagan la obra, los trámites y la comercialización (≈ 1.040.000) y quedan ≈ 332.000. Con eso se paga el terreno con sus gastos de compra (270.000) y los impuestos (≈ 72.000), y no sobra nada: el resultado es ≈ −10.000. Se recupera todo lo invertido, pero no hay ganancia para repartir.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Socio</th><th>Pone</th><th>Cobra, en este orden</th></tr></thead>
+    <tbody>
+      <tr><td><b>Dueño del terreno</b> (hoy son 2 titulares)</td><td>El terreno, valuado en 260.000. No cobra al principio: lo aporta</td><td>1º el valor del terreno (260.000) y 2º un premio del 15 % (39.000) por esperar unos 2 años, de las primeras ventas</td></tr>
+      <tr><td><b>Inversor</b></td><td>Toda la plata de la obra: ≈ USD 1.000.000 en aportes mensuales</td><td>1º su capital. 2º un retorno preferente (se cobra antes que el resto de la ganancia) del 10 % anual (≈ 94.000). 3º la mitad de lo que sobre</td></tr>
+      <tr><td><b>Francisco + socio</b> (50 % y 50 %)</td><td>Proyecto, permisos, dirección y gestión de obra, venta</td><td>La otra mitad de lo que sobre después del terreno, el capital y los preferentes</td></tr>
+    </tbody>
+  </table></div>
+  <div class="tbl"><table>
+    <thead><tr><th>Venta USD/m²</th><th class="r">Resultado neto</th><th class="r">Dueño del terreno</th><th class="r">Inversor gana</th><th class="r">Francisco</th><th class="r">Socio</th></tr></thead>
+    <tbody>
+      <tr><td>2.500 (base)</td><td class="r neg">−10.000</td><td class="r">260.000</td><td class="r neg">−10.000 (−1 %)</td><td class="r">0</td><td class="r">0</td></tr>
+      <tr><td>2.700</td><td class="r">57.000</td><td class="r">299.000</td><td class="r">18.000 (2 %)</td><td class="r">0</td><td class="r">0</td></tr>
+      <tr><td>2.900</td><td class="r">121.000</td><td class="r">299.000</td><td class="r">82.000 (8 %)</td><td class="r">0</td><td class="r">0</td></tr>
+      <tr><td>3.100</td><td class="r">185.000</td><td class="r">299.000</td><td class="r">120.000 (12 %)</td><td class="r">13.000</td><td class="r">13.000</td></tr>
+      <tr><td>3.300</td><td class="r">249.000</td><td class="r">299.000</td><td class="r">152.000 (15 %)</td><td class="r">29.000</td><td class="r">29.000</td></tr>
+    </tbody>
+  </table><p class="small muted" style="padding:8px 11px">Obra a 1.700/m², 100 % eléctrica, impuestos de venta habitual. El porcentaje del inversor es sobre su capital, por los ≈ 2 años que dura. Con obra a 1.600/m², cada fila mejora unos 35.000.</p></div>
+  <p class="note"><b>¿Es tentador?</b> Para el dueño del terreno sí: cobra su valor de mercado más un 15 %, sin inmobiliaria. Para el inversor y para ustedes dos, no. Con precios de la zona (2.500–2.700/m²) el inversor gana entre 0 y 2 % en dos años, cuando un fideicomiso en dólares paga 12–16 % al año, y a ustedes no les queda nada. Para que los cuatro ganen bien hace falta vender a más de 3.100/m², que hoy en Villa Ortúzar no está probado, o que el dueño acepte cobrar el terreno a ≈ 150.000.</p>
+  <ul class="plain">
+    <li><b>Lo que lo haría tentador:</b> 1) que el dueño acepte cobrar una parte de las ganancias en lugar de un valor fijo (si el negocio va bien gana más; si va mal, comparte la pérdida); 2) preventa de 1 casa en pozo, que baja el capital del inversor y su preferente; 3) obra a ≤ 1.600/m² con cotización cerrada; 4) una tasación que respalde 2.900/m² o más.</li>
+    <li><b>Cómo se formaliza:</b> fideicomiso de administración o sociedad, con el terreno aportado a un valor tasado en USD, cuadro de aportes y retiros por socio, tope de sobrecostos y reglas de salida. Lo arman un escribano y un contador.</li>
+  </ul>
+</section>
+
+<section id="energia">
+  <div class="sechead"><span class="eyebrow">Energía</span><h2>Dos versiones: con gas y 100 % eléctrica</h2></div>
+  <div class="two">
+    <div class="tbl"><table>
+      <thead><tr><th>Por casa</th><th class="r">Con gas</th><th class="r">100 % eléctrica</th></tr></thead>
+      <tbody>
+        <tr><td>Instalación sin aire acondicionado</td><td class="r">5.500</td><td class="r">—</td></tr>
+        <tr><td>Instalación con aire para verano</td><td class="r">9.100</td><td class="r">6.900</td></tr>
+        <tr><td>Qué lleva</td><td>Red, medidor y conexión Metrogas; 5 calefactores de tiro balanceado; termotanque; cocina; 4 splits para verano</td><td>5 splits inverter frío/calor; termotanque con bomba de calor de 200 L; anafe de inducción y horno; tablero reforzado</td></tr>
+        <tr><td>Factura anual estimada</td><td class="r">USD 1.020</td><td class="r">USD 977</td></tr>
+        <tr><td>Factura de julio</td><td class="r">$193.000</td><td class="r">$218.000</td></tr>
+        <tr><td>Factura de enero</td><td class="r">$102.000</td><td class="r">$79.000</td></tr>
+      </tbody>
+    </table></div>
+    <div class="card"><div class="legend"><span><i style="background:var(--s2)"></i>Con gas (gas + luz)</span><span><i style="background:var(--s1)"></i>100 % eléctrica</span></div><div class="chart" id="ch-energia"></div></div>
+  </div>
+  <ul class="plain">
+    <li><b>Recomendación: 100 % eléctrica.</b> Cuesta USD 2.200 menos por casa (6.600 en total) porque el mismo equipo da frío y calor, la factura anual es casi igual y no depende de la factibilidad de Metrogas. Además evita conductos de 9 m hasta el techo y rejillas en las fachadas, y queda lista para sumar paneles solares.</li>
+    <li><b>Cuándo conviene gas:</b> si los compradores de la zona lo piden o si la luz aumenta bastante más que el gas en los próximos años.</li>
+    <li>Tarifas sin subsidio de octubre de 2026 con impuestos: luz ≈ $202/kWh (Edesur) y gas ≈ $392/m³ (Metrogas), más el cargo fijo según categoría. Demanda estimada por casa: calefacción 6.200 kWh útiles, agua caliente 3.330 kWh (5 personas). Dólar a $1.545.</li>
+  </ul>
+</section>
+
+<section id="materiales">
+  <div class="sechead"><span class="eyebrow">Materiales</span><h2>Cuánto material lleva y cuándo se compra</h2></div>
+  <p class="muted small">Cómputo preliminar (±20 %) a partir de las medidas del proyecto. Lo ajustan el ingeniero calculista y el maestro mayor de obras.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Material</th><th class="r">Por casa</th><th class="r">3 casas</th><th>Se usa en</th><th class="r">Se compra en el mes de obra</th></tr></thead>
+    <tbody>
+      <tr><td>Hormigón H21, de resistencia estándar (bases, vigas, columnas, losas, escalera, pileta)</td><td class="r">41 m³</td><td class="r">124 m³</td><td>Estructura</td><td class="r">1 a 7</td></tr>
+      <tr><td>Hierro (acero ADN 420, el de construcción estándar)</td><td class="r">3,2 t</td><td class="r">9,7 t</td><td>Fundaciones, columnas, vigas, losas</td><td class="r">1 a 7</td></tr>
+      <tr><td>Viguetas pretensadas de 7,40 m</td><td class="r">51</td><td class="r">153</td><td>Entrepisos y techo</td><td class="r">2, 4 y 6</td></tr>
+      <tr><td>Bloques cerámicos para losa</td><td class="r">1.464</td><td class="r">4.392</td><td>Entrepisos y techo</td><td class="r">2, 4 y 6</td></tr>
+      <tr><td>Malla de acero 15 × 15 Ø 4,2</td><td class="r">201 m²</td><td class="r">603 m²</td><td>Capa de compresión</td><td class="r">2, 4 y 6</td></tr>
+      <tr><td>Ladrillo hueco 18 × 18 × 33 (fachadas y medianeras)</td><td class="r">3.770</td><td class="r">11.300</td><td>Cerramientos</td><td class="r">3 a 8</td></tr>
+      <tr><td>Ladrillo hueco 12 × 18 × 33 (tabiques)</td><td class="r">2.290</td><td class="r">6.870</td><td>Divisiones interiores</td><td class="r">4 a 9</td></tr>
+      <tr><td>Cemento (bolsas de 50 kg)</td><td class="r">426</td><td class="r">1.280</td><td>Hormigón, morteros, contrapisos</td><td class="r">1 a 10</td></tr>
+      <tr><td>Arena · piedra partida</td><td class="r">62 m³ · 31 m³</td><td class="r">186 m³ · 93 m³</td><td>Hormigón y morteros</td><td class="r">1 a 10</td></tr>
+      <tr><td>Carpinterías de aluminio negro con DVH (doble vidrio hermético)</td><td class="r">≈ 35 m²</td><td class="r">≈ 105 m²</td><td>Ventanas y ventanales</td><td class="r">Pedir en el 5 (demoran 6–8 semanas), colocar en el 9</td></tr>
+      <tr><td>Caños de agua, desagüe y eléctricos</td><td class="r">1 núcleo apilado</td><td class="r">—</td><td>Instalaciones</td><td class="r">6 a 9</td></tr>
+      <tr><td>Yeso proyectado · revoque exterior</td><td class="r">728 m² · 99 m²</td><td class="r">2.184 m² · 297 m²</td><td>Terminaciones</td><td class="r">9 a 11</td></tr>
+      <tr><td>Microcemento</td><td class="r">201 m²</td><td class="r">603 m²</td><td>Pisos y baños</td><td class="r">11 a 12</td></tr>
+      <tr><td>Sanitarios (inodoro, lavatorio, ducha)</td><td class="r">2 baños + toilette</td><td class="r">6 + 3</td><td>Baños</td><td class="r">10 a 12</td></tr>
+      <tr><td>Pileta: venecita</td><td class="r">≈ 30 m²</td><td class="r">≈ 90 m²</td><td>Patios</td><td class="r">10 a 12</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="plazos">
+  <div class="sechead"><span class="eyebrow">Plazos</span><h2>Cronograma</h2></div>
+  <div class="tbl"><table>
+    <thead><tr><th>Etapa</th><th>Cuándo</th><th>Qué pasa</th></tr></thead>
+    <tbody>
+      <tr><td>0 · Antes de comprar</td><td>Ya, hasta 12 meses</td><td>Fijación de LFI en TAD, tasación, cotización de obra, mensura</td></tr>
+      <tr><td>1 · Compra y proyecto</td><td>Meses 0 a 6</td><td>Escritura, proyecto ejecutivo, cálculo estructural, registro de planos y permiso de demolición</td></tr>
+      <tr><td>2 · Demolición y fundaciones</td><td>Meses 6 a 8</td><td>Demolición de 163 m², bases y vigas de fundación de las 3 casas (meses 1–2 de obra)</td></tr>
+      <tr><td>3 · Estructura</td><td>Meses 8 a 13</td><td>Una losa cada ~6 semanas, cerramientos detrás (meses 2–7 de obra)</td></tr>
+      <tr><td>4 · Instalaciones y carpinterías</td><td>Meses 12 a 16</td><td>Núcleo apilado, carpinterías, revoques (meses 6–10 de obra)</td></tr>
+      <tr><td>5 · Terminaciones y piletas</td><td>Meses 16 a 19</td><td>Microcemento, sanitarios, cocina, pileta, pasillo (meses 10–13 de obra)</td></tr>
+      <tr><td>6 · Final de obra, PH y ventas</td><td>Meses 19 a 26</td><td>Final de obra y plano de PH (60–120 días cada uno), escrituras. Ventas desde el mes 12, en pozo o en construcción</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="pasos">
+  <div class="sechead"><span class="eyebrow">Qué hacer</span><h2>Condiciones para seguir</h2></div>
+  <ul class="plain">
+    <li><span class="chip c-crit">1</span> <b>LFI:</b> iniciar el trámite en TAD. Si la LFI queda a ≈ 21 m (regla general), entran 2 casas y el terreno vale todavía menos.</li>
+    <li><span class="chip c-crit">2</span> <b>Tasación</b> de una casa nueva de 183 m² con pileta en el corredor Donado–Holmberg. Si no da ≥ 2.700/m², no hay negocio.</li>
+    <li><span class="chip c-warn">3</span> <b>Cotización de obra</b> del maestro mayor de obras por administración. Objetivo: ≤ 1.700/m² todo incluido.</li>
+    <li><span class="chip c-warn">4</span> <b>Terreno a ≤ 130.000</b> con condición suspensiva (la compra se hace solo si se cumple la condición) por la LFI (ver ). Lo más probable es que los dueños no acepten, porque vendiendo sus dos unidades viejas por separado sacan 196–245 mil.</li>
+    <li><span class="chip c-info">5</span> <b>Contador:</b> estructura fiscal. Si los socios se quedan con casas en vez de venderlas, se evitan Ingresos Brutos y Ganancias, aunque la casa cuesta lo mismo que en el mercado: no se gana plata, se compra al costo.</li>
+  </ul>
+</section>
+
+<section id="glosario">
+  <div class="sechead"><span class="eyebrow">Glosario</span><h2>Qué significa cada término</h2></div>
+  <div class="tbl"><table><thead><tr><th>Término</th><th>Qué significa</th></tr></thead><tbody><tr><td><b>LFI</b></td><td>Línea de frente interno. Línea que fija la Ciudad para cada manzana: hasta ahí se puede construir desde la calle hacia el fondo. Detrás queda el pulmón de manzana</td></tr><tr><td><b>LIB</b></td><td>Línea interna de basamento. Límite del centro de la manzana, que tiene que quedar verde y absorbente</td></tr><tr><td><b>DGIUR</b></td><td>Dirección General de Interpretación Urbanística. El organismo de la Ciudad que fija la LFI en manzanas irregulares</td></tr><tr><td><b>TAD</b></td><td>Trámites a Distancia. La web oficial donde se inicia la fijación de LFI (pide la cuenta miBA de nivel 3)</td></tr><tr><td><b>USAB 2</b></td><td>Unidad de Sustentabilidad de Altura Baja 2. La zona del Código Urbanístico donde está el lote: altura máxima de 14,60 m</td></tr><tr><td><b>CU · CE</b></td><td>Código Urbanístico (qué y cuánto se puede construir) y Código de Edificación (cómo se construye: patios, escaleras, ventilación)</td></tr><tr><td><b>Espacio urbano</b></td><td>Espacio abierto donde pueden dar las ventanas del living: la calle, el fondo libre o un patio con lado de al menos 4 m y ancho de al menos 2/3 de la altura de la casa</td></tr><tr><td><b>Patio vertical</b></td><td>Patio interno más chico (20 m² y 4 m de lado en USAB 2). Sirve para ventilar dormitorios si la ventana queda a 5 m o más del muro de enfrente</td></tr><tr><td><b>h/d</b></td><td>Altura de la casa dividida por el ancho del patio. La norma pide que no pase de 1,5</td></tr><tr><td><b>PH</b></td><td>Propiedad horizontal. Acá, cada casa con su patio es una unidad independiente dentro del mismo terreno</td></tr><tr><td><b>PB</b></td><td>Planta baja</td></tr><tr><td><b>SMP</b></td><td>Sección, manzana y parcela: el número con el que Catastro identifica el lote</td></tr><tr><td><b>Mensura</b></td><td>Medición oficial del terreno hecha por un agrimensor</td></tr><tr><td><b>Plusvalía</b></td><td>Cargo que cobra la Ciudad cuando se construye más de lo que permitía el código anterior. Acá es USD 0</td></tr><tr><td><b>Pozo</b></td><td>Venta de unidades antes de construirlas, generalmente más baratas</td></tr><tr><td><b>Valor residual</b></td><td>Lo máximo que se puede pagar por el terreno para que el negocio deje la ganancia buscada</td></tr><tr><td><b>Preferente</b></td><td>Retorno que cobra el inversor antes de que se reparta el resto de la ganancia</td></tr><tr><td><b>Fideicomiso</b></td><td>Contrato en el que un tercero (fiduciario) administra el terreno y la plata de los socios para hacer la obra</td></tr><tr><td><b>Condición suspensiva</b></td><td>La compra queda firmada pero solo se concreta si se cumple la condición (por ejemplo, una LFI favorable)</td></tr><tr><td><b>Ingresos Brutos · IVA · Ganancias</b></td><td>Impuestos que se pagan al vender las casas como actividad habitual: ≈ 3 % de las ventas, 10,5 % sobre la parte de obra y 25–35 % de la ganancia</td></tr><tr><td><b>DVH</b></td><td>Doble vidrio hermético: aísla del frío y del ruido</td></tr><tr><td><b>Edesur · Metrogas</b></td><td>Las empresas de luz y de gas de la zona</td></tr></tbody></table></div>
+</section>
+
+<section id="bases">
+  <div class="sechead"><span class="eyebrow">Bases</span><h2>En qué me baso y qué tan seguro es cada dato</h2></div>
+  <div class="tbl"><table>
+    <thead><tr><th>Supuesto</th><th>Valor usado</th><th>De dónde sale</th><th>Confianza</th></tr></thead>
+    <tbody>
+      <tr><td>Normativa</td><td>CU con Ley 6776 y CE vigente</td><td>Texto literal: CU actualizado por la SECDU (Secretaría de Desarrollo Urbano) al 31/12/2024 (publicado por el CPAU, Consejo Profesional de Arquitectura y Urbanismo) y CE Leyes 6100 + 6438 (CPAU), leídos artículo por artículo</td><td><span class="chip c-info">alta</span></td></tr>
+      <tr><td>Medidas del lote</td><td>8,66 × 42,50</td><td>3 fuentes catastrales coinciden</td><td><span class="chip c-info">alta</span> (falta mensura)</td></tr>
+      <tr><td>LFI</td><td>Exenta: edificable hasta 38,50 m</td><td>Ciudad 3D no la marca, pero existe la nota de 1982 sin texto online</td><td><span class="chip c-crit">baja</span> (trámite)</td></tr>
+      <tr><td>Precio de venta</td><td>2.500/m² (rango 2.300–2.700)</td><td>Holmberg 1659 (único comparable directo), 32 casas nuevas, pozo de la zona, brecha oferta/cierre −4,8 %</td><td><span class="chip c-warn">media</span> (falta tasación)</td></tr>
+      <tr><td>Costo de obra</td><td>1.700/m² todo incluido</td><td>Apymeco (cámara de pequeñas y medianas constructoras), sep. 2026 (1.594 + IVA + 15–25 % de honorarios y tasas), ICC CABA (índice oficial del costo de la construcción), desarrolladores (≈ 1.500 en edificios), con ahorro por administración</td><td><span class="chip c-warn">media</span> (falta cotización)</td></tr>
+      <tr><td>Impuestos</td><td>Ingresos Brutos 3 %, IVA 10,5 % sobre la obra (neto), Ganancias 30 %</td><td>Ley Impositiva CABA 2026, Ley de IVA, Ley 27.802 (la exención no aplica a la venta habitual)</td><td><span class="chip c-warn">media</span> (falta contador)</td></tr>
+      <tr><td>Valor del terreno</td><td>≈ 260.000</td><td>8 lotes publicados, valor de uso actual de los 2 PH, valor residual (lo máximo que se puede pagar por el terreno para que el negocio cierre) de un edificio y de este proyecto</td><td><span class="chip c-warn">media</span></td></tr>
+      <tr><td>Tarifas de luz y gas</td><td>$202/kWh y $392/m³ con impuestos</td><td>Cuadros tarifarios de Edesur y Metrogas, octubre 2026, sin subsidio</td><td><span class="chip c-info">alta</span></td></tr>
+      <tr><td>Materiales</td><td>Cómputo ±20 %</td><td>Medidas del proyecto y rendimientos estándar por m²</td><td><span class="chip c-warn">media</span></td></tr>
+    </tbody>
+  </table></div>
+  <h3>Fuentes</h3>
+  <ul class="plain small">
+    <li>Catastro GCBA: <a href="https://epok.buenosaires.gob.ar/catastro/parcela/?smp=049-061-031">datos de la parcela</a> y <a href="https://epok.buenosaires.gob.ar/cur3d/seccion_edificabilidad/?smp=049-061-031">edificabilidad y plusvalía</a>.</li>
+    <li>Código Urbanístico, texto actualizado (CPAU / SECDU) y <a href="https://static.cpau.org/.newsite/noticias/2021/noviembre/codigo_de_edificacion_-_texto_ordenado_ley_6100__ley_6438.pdf">Código de Edificación, texto ordenado</a>.</li>
+    <li>Zonaprop, 16–17/10/2026: <a href="https://www.zonaprop.com.ar/ph-venta-villa-ortuzar-3-ambientes.html">PH de 3 amb en Villa Ortúzar</a>, <a href="https://www.zonaprop.com.ar/ph-venta-villa-ortuzar-chacarita-colegiales-a-estrenar.html">PH a estrenar</a>, <a href="https://www.zonaprop.com.ar/casas-venta-villa-ortuzar-colegiales-chacarita-villa-urquiza-a-estrenar.html">casas a estrenar</a> y <a href="https://www.zonaprop.com.ar/terrenos-venta-villa-ortuzar-chacarita-colegiales.html">terrenos</a>.</li>
+    <li>Costos de construcción: <a href="https://www.ambito.com/real-estate/baja-o-sube-el-costo-construccion-cuanto-sale-un-edificio-caba-y-que-horizonte-ven-las-desarrolladoras-n6254761">Ámbito</a>, Apymeco (sep. 2026), ICC CABA (may. 2026), La Nación (jul. 2026).</li>
+    <li>Precios por barrio: <a href="https://mercado.com.ar/ladrillos-y-proyectos/chacarita-y-colegiales-ganan-demanda-inmobiliaria-con-precios-desde-us-2-800-por-m2">Mercado</a>, <a href="https://www.ambito.com/real-estate/chacarita-colegiales-y-villa-ortuzar-cuanto-cuesta-comprar-y-alquilar-los-barrios-que-estan-moda-n6331721">Ámbito</a>, Colegio de Escribanos (cierres, agosto 2026).</li>
+    <li>Tarifas: <a href="https://www.edesur.com.ar/tarifas-cuadro-tarifario/">Edesur</a>, Metrogas (octubre 2026), <a href="https://www.infobae.com/economia/2026/07/01/aumentos-de-luz-y-gas-publicaron-los-nuevos-cuadros-tarifarios-y-prorrogaron-las-bonificaciones-por-subsidios/">Infobae</a>.</li>
+    <li>Gastos de escritura: <a href="https://www.lanacion.com.ar/propiedades/escritura-de-una-propiedad-que-gastos-hay-que-pagar-y-cuanto-cuestan-en-abril-2026-nid29042026/">La Nación</a>. Honorarios y trámites: <a href="https://www.estudiolatarq.com/blog/honorarios-arquitectos-caba-2026/">Estudio Lat</a>.</li>
+  </ul>
+  <p class="small muted">Estimaciones de anteproyecto: no son presupuestos ni asesoramiento impositivo o legal. Actualizado el 17/10/2026.</p>
+</section>
+</div>
+
+<script>
+(function(){
+const put=(id,fn)=>{const el=document.getElementById(id);try{el.innerHTML=fn();}catch(e){el.textContent='No se pudo dibujar: '+e.message;}};
+/* ===== Casa tipo. x: 0 = muro del pasillo (SE) → 7,11 = lindero NO; y: 0 = fachada de frente (NE) → 8,00 = fachada al patio propio (SO) ===== */
+const W=7.11, T=0.26, LAND=0.95, SX=LAND+7*T; // SX = 2,77
+const S=58, OX=96, OY=70;
+const X=x=>+(OX+x*S).toFixed(1), Y=y=>+(OY+y*S).toFixed(1);
+const R=(r,c,ex='')=>`<rect class="${c}" x="${X(r[0])}" y="${Y(r[1])}" width="${+((r[2]-r[0])*S).toFixed(1)}" height="${+((r[3]-r[1])*S).toFixed(1)}" ${ex}/>`;
+const tk=(a,b,c,d)=>`<line class="pdim" x1="${a}" y1="${b}" x2="${c}" y2="${d}"/>`;
+function dimH(x0,x1,y,t){const a=X(x0),b=X(x1),yy=Y(y);return tk(a,yy,b,yy)+tk(a-4,yy+4,a+4,yy-4)+tk(b-4,yy+4,b+4,yy-4)+`<text class="pdt" x="${(a+b)/2}" y="${yy-6}" text-anchor="middle">${t}</text>`;}
+function dimV(y0,y1,x,t){const a=Y(y0),b=Y(y1),xx=X(x);return tk(xx,a,xx,b)+tk(xx-4,a+4,xx+4,a-4)+tk(xx-4,b+4,xx+4,b-4)+`<text class="pdt" x="${xx+7}" y="${(a+b)/2+4}">${t}</text>`;}
+function door(h,c,o,l){const hx=X(h[0]),hy=Y(h[1]),L=l*S,cx=hx+c[0]*L,cy=hy+c[1]*L,ox=hx+o[0]*L,oy=hy+o[1]*L,cr=c[0]*o[1]-c[1]*o[0];
+  return `<line style="stroke:var(--ink);stroke-width:1.6" x1="${hx}" y1="${hy}" x2="${ox}" y2="${oy}"/><path class="pf" d="M${cx} ${cy} A${L} ${L} 0 0 ${cr>0?1:0} ${ox} ${oy}"/>`;}
+function win(r){const hz=(r[2]-r[0])>(r[3]-r[1]);return R(r,'pwin')+(hz?`<line class="pf" x1="${X(r[0])}" y1="${(Y(r[1])+Y(r[3]))/2}" x2="${X(r[2])}" y2="${(Y(r[1])+Y(r[3]))/2}"/>`:'');}
+const lbl=(x,y,a,b)=>(a?`<text class="plbl" x="${X(x)}" y="${Y(y)}" text-anchor="middle">${a}</text>`:'')+(b?`<text class="psub" x="${X(x)}" y="${Y(y)+(a?15:0)}" text-anchor="middle">${b}</text>`:'');
+function bed(r,two){let s=R(r,'pff','rx="3"');const x0=X(r[0]),y0=Y(r[1]),w=(r[2]-r[0])*S,h=(r[3]-r[1])*S;const n=two?2:1,pw=(w-10-(n-1)*6)/n;
+  for(let k=0;k<n;k++)s+=`<rect class="pf" x="${x0+5+k*(pw+6)}" y="${y0+5}" width="${pw}" height="12" rx="3"/>`;
+  return s+`<line class="pf" x1="${x0}" y1="${y0+h*0.45}" x2="${x0+w}" y2="${y0+h*0.45}"/>`;}
+function stairs(lv){
+  let s='';const tr=(y0,y1,cls)=>{let o='';for(let k=1;k<7;k++){const x=X(LAND+k*T);o+=`<line class="${cls}" x1="${x}" y1="${Y(y0)}" x2="${x}" y2="${Y(y1)}"/>`;}return o;};
+  const ah=(x,y,d)=>`<path class="parrow" d="M${x-6*d} ${y-5} L${x} ${y} L${x-6*d} ${y+5}"/>`;
+  if(lv==='pb'){s+=R([LAND,4.00,SX,4.90],'pff')+tr(4.00,4.90,'pf')+R([0,3.10,LAND,4.90],'pdash')+R([LAND,3.10,SX,4.00],'pdash')+tr(3.10,4.00,'pdash');
+    s+=`<path class="parrow" d="M${X(SX-0.1)} ${Y(4.45)} L${X(0.47)} ${Y(4.45)} L${X(0.47)} ${Y(3.55)} L${X(1.3)} ${Y(3.55)}"/>`+ah(X(1.3),Y(3.55),1)+`<text class="psub" x="${X(1.86)}" y="${Y(4.45)-4}" text-anchor="middle">sube</text>`;}
+  else if(lv==='p1'){s+=R([0,3.10,LAND,4.90],'pdash')+R([LAND,3.10,SX,4.00],'pff')+tr(3.10,4.00,'pf')+R([LAND,4.00,SX,4.90],'pff')+tr(4.00,4.90,'pf');
+    s+=`<path class="parrow" d="M${X(SX-0.1)} ${Y(4.45)} L${X(1.1)} ${Y(4.45)}"/>`+ah(X(1.1),Y(4.45),-1)+`<path class="parrow" d="M${X(SX-0.1)} ${Y(3.55)} L${X(1.1)} ${Y(3.55)}"/>`+ah(X(1.1),Y(3.55),-1);
+    s+=`<text class="psub" x="${X(1.9)}" y="${Y(4.45)-4}" text-anchor="middle">sube</text><text class="psub" x="${X(1.9)}" y="${Y(3.55)-4}" text-anchor="middle">baja</text>`;}
+  else {s+=R([LAND,3.10,SX,4.00],'pff')+tr(3.10,4.00,'pf')+R([0,3.10,LAND,4.90],'pdash')+R([LAND,4.00,SX,4.90],'pdash');
+    s+=`<line class="pdash" x1="${X(LAND)}" y1="${Y(4.00)}" x2="${X(SX)}" y2="${Y(4.90)}"/><line class="pdash" x1="${X(SX)}" y1="${Y(4.00)}" x2="${X(LAND)}" y2="${Y(4.90)}"/>`;
+    s+=`<path class="parrow" d="M${X(SX-0.1)} ${Y(3.55)} L${X(1.1)} ${Y(3.55)}"/>`+ah(X(1.1),Y(3.55),-1)+`<text class="psub" x="${X(1.9)}" y="${Y(3.55)-4}" text-anchor="middle">baja</text>`;
+    s+=`<path class="prail" d="M${X(LAND)} ${Y(4.00)} L${X(SX)} ${Y(4.00)} L${X(SX)} ${Y(4.90)}"/>`;}
+  if(lv!=='p2') s+=`<line class="prail" x1="${X(LAND)}" y1="${Y(4.00)}" x2="${X(SX)}" y2="${Y(4.00)}"/>`;
+  return s;}
+function plan(lv){
+  const Hm=lv==='pb'?15.6:16.2;
+  let s=`<rect style="fill:var(--paper)" x="0" y="0" width="${X(7.26)+120}" height="${Y(Hm)}"/>`;
+  s+=`<text class="psub" transform="translate(${X(-0.75)},${Y(5.0)}) rotate(-90)" text-anchor="middle">Pasillo común 1,10 m · descubierto</text>`;
+  s+=`<text class="psub" x="${X(3.55)}" y="${Y(-0.45)}" text-anchor="middle">Frente (calle o patio de la casa anterior)</text>`;
+  if(lv==='pb'){
+    s+=R([7.11,8.20,7.26,14.25],'pw')+R([-0.15,8.20,0,14.25],'pw');
+    s+=`<rect class="pwater" x="${X(5.11)}" y="${Y(10.25)}" width="${2.0*S}" height="${4.0*S}" rx="3"/><rect class="pwater" x="${X(5.11)+6}" y="${Y(10.25)+6}" width="${2.0*S-12}" height="${4.0*S-12}" rx="2"/>`;
+    s+=R([0.15,8.35,0.75,9.15],'pff')+`<rect class="pbrick" x="${X(0.15)}" y="${Y(8.35)}" width="${0.3*S}" height="${0.3*S}"/><text class="psub" x="${X(0.85)}" y="${Y(8.85)}">Parrilla</text>`;
+    s+=R([1.6,10.6,3.4,11.5],'pff','rx="2"')+[[1.75,10.15],[2.35,10.15],[2.95,10.15],[1.75,11.55],[2.35,11.55],[2.95,11.55]].map(([a,b])=>R([a,b,a+0.4,b+0.4],'pff','rx="4"')).join('');
+    s+=R([0.15,13.2,4.5,14.25],'pgreen');
+    s+=lbl(3.0,9.65,'Patio propio 43 m²','7,11 × 6,05')+lbl(6.11,12.3,'Pileta','2,00 × 4,00');
+    s+=`<text class="psub" x="${X(3.55)}" y="${Y(14.25)+16}" text-anchor="middle">Fachada de la casa siguiente (en la casa 3, fondo libre)</text>`;
+    // muro del pasillo con nicho de entrada (ensanche de Ø 1,50)
+    s+=R([-0.15,-0.20,0,0.60],'pw')+R([-0.15,2.10,0,8.20],'pw')+R([0,0.45,0.55,0.60],'pw')+R([0,2.10,0.55,2.25],'pw')+R([0.40,0.60,0.55,0.90],'pw')+R([0.40,1.80,0.55,2.10],'pw');
+    s+=door([0.55,1.80],[0,-1],[1,0],0.90)+`<circle cx="${X(-0.35)}" cy="${Y(1.35)}" r="${0.75*S}" style="fill:none;stroke:var(--dim);stroke-dasharray:3 3"/><text class="pdt" x="${X(-0.45)}" y="${Y(0.5)}" text-anchor="middle">Ø 1,50</text>`;
+    // muros del núcleo (pasos abiertos)
+    [[0,3.00,2.87,3.10],[4.20,3.00,7.11,3.10],[0,4.90,2.87,5.00],[4.20,4.90,7.11,5.00]].forEach(w=>s+=R(w,'pw'));
+  } else {
+    s+=R([0,8.20,7.11,14.25],'pdash')+`<text class="psub" x="${X(3.55)}" y="${Y(11.2)}" text-anchor="middle">Patio abajo · a cielo abierto</text>`;
+    s+=R([-0.15,-0.20,0,8.20],'pw');
+    [[0,3.00,2.80,3.10],[3.50,3.00,3.60,3.10],[4.30,3.00,7.11,3.10],[0,4.90,3.20,5.00],[3.90,4.90,7.11,5.00],[3.50,0,3.60,3.00]].forEach(w=>s+=R(w,'pw'));
+  }
+  s+=stairs(lv);
+  [[7.11,-0.20,7.26,8.20],[-0.15,-0.20,7.26,0],[-0.15,8.00,7.26,8.20],[4.30,3.10,4.40,3.25],[4.30,4.10,4.40,4.90]].forEach(w=>s+=R(w,'pw'));
+  s+=win([0.95,8.00,6.15,8.20]);
+  s+=lv==='pb'?win([1.20,-0.20,6.00,0]):win([0.70,-0.20,2.80,0])+win([4.30,-0.20,6.40,0]);
+  // núcleo húmedo
+  s+=door([4.40,4.10],[0,-1],[1,0],0.85);
+  s+=R([5.30,3.10,5.85,3.55],'pff')+`<ellipse class="pf" cx="${X(5.575)}" cy="${Y(3.33)}" rx="9" ry="6"/>`;
+  s+=`<rect class="pff" x="${X(5.40)+4}" y="${Y(4.90)-8}" width="${0.5*S-8}" height="8"/><ellipse class="pff" cx="${X(5.65)}" cy="${Y(4.55)}" rx="12" ry="14"/>`;
+  if(lv==='pb'){
+    s+=`<circle class="pff" cx="${X(6.71)}" cy="${Y(4.0)}" r="${0.3*S}"/><text class="psub" x="${X(6.52)}" y="${Y(4.72)}" text-anchor="middle">lavarropas</text>`;
+    
+    s+=R([6.51,0.20,7.11,0.80],'pff')+[[.3,.3],[.7,.3],[.3,.7],[.7,.7]].map(p=>`<circle class="pf" cx="${X(6.51+0.6*p[0])}" cy="${Y(0.2+0.6*p[1])}" r="5"/>`).join('');
+    s+=R([6.51,0.80,7.11,1.40],'pff')+R([6.51,1.40,7.11,2.20],'pff')+`<rect class="pf" x="${X(6.58)}" y="${Y(1.5)}" width="${0.46*S}" height="${0.6*S}" rx="5"/>`+R([6.41,2.20,7.11,2.90],'pff')+`<line class="pf" x1="${X(6.41)}" y1="${Y(2.2)}" x2="${X(7.11)}" y2="${Y(2.9)}"/>`;
+    [['Cocina',0.5],['Mesada',1.1],['Bacha',1.8],['Heladera',2.55]].forEach(([t,y])=>s+=`<text class="psub" x="${X(6.41)-6}" y="${Y(y)+4}" text-anchor="end">${t}</text>`);
+    s+=R([2.3,0.75,4.5,1.65],'pff','rx="2"')+[2.45,3.15,3.85].map(a=>R([a,0.30,a+0.4,0.70],'pff','rx="4"')+R([a,1.70,a+0.4,2.10],'pff','rx="4"')).join('');
+    s+=lbl(3.4,2.75,'Cocina-comedor','21,3 m²');
+    s+=R([0,5.50,0.45,7.50],'pff')+`<rect style="fill:var(--ink)" x="${X(0.45)-5}" y="${Y(5.75)}" width="4" height="${1.5*S}"/><text class="psub" x="${X(0.25)}" y="${Y(5.40)}" text-anchor="middle">TV</text>`;
+    s+=R([2.20,5.60,3.05,7.60],'pff','rx="5"')+`<rect class="pf" x="${X(3.05)-10}" y="${Y(5.60)}" width="10" height="${2.0*S}" rx="4"/>`+R([1.05,6.20,1.65,7.00],'pff','rx="2"');
+    s+=R([5.30,6.40,6.10,7.20],'pff','rx="6"')+R([6.25,6.55,6.75,7.05],'pff','rx="25"');
+    s+=`<path class="parrow" style="stroke-dasharray:3 3" d="M${X(3.53)} ${Y(5.05)} L${X(3.53)} ${Y(5.75)}"/>`;
+    s+=lbl(5.55,5.80,'Living','21,3 m²')+lbl(3.53,4.2,'Hall','');
+  } else {
+    s+=R([6.31,3.10,7.11,4.90],'pff')+`<line class="pf" x1="${X(6.31)}" y1="${Y(3.10)}" x2="${X(7.11)}" y2="${Y(4.90)}"/><line class="pf" x1="${X(7.11)}" y1="${Y(3.10)}" x2="${X(6.31)}" y2="${Y(4.90)}"/>`;
+    s+=door([3.50,3.00],[-1,0],[0,-1],0.70)+door([3.60,3.00],[1,0],[0,-1],0.70)+door([3.90,5.00],[-1,0],[0,1],0.70);
+    s+=lbl(5.6,4.0,'','Baño 4,9 m²')+lbl(3.53,4.2,'Hall','');
+  }
+  if(lv==='p1'){
+    s+=R([0,0,0.6,2.2],'pff')+R([0.9,0.9,2.6,1.6],'pff','rx="2"')+R([1.5,1.65,1.9,2.05],'pff','rx="4"');
+    s+=R([3.60,0,7.11,0.6],'pff')+R([6.51,0.6,7.11,3.0],'pff')+`<line class="pdash" x1="${X(3.6)}" y1="${Y(0.3)}" x2="${X(7.11)}" y2="${Y(0.3)}"/><line class="pdash" x1="${X(6.81)}" y1="${Y(0.6)}" x2="${X(6.81)}" y2="${Y(3.0)}"/>`;
+    s+=lbl(1.75,2.65,'Escritorio','10,5 m²')+lbl(5.0,1.6,'Vestidor','10,5 m²');
+    s+=bed([4.6,5.0,6.2,7.0],true)+R([4.1,5.0,4.55,5.4],'pff')+R([6.25,5.0,6.7,5.4],'pff');
+    s+=lbl(2.2,6.6,'Dormitorio principal','21,3 m²');
+  }
+  if(lv==='p2'){
+    s+=bed([0,0.6,0.9,2.5])+R([0,2.5,0.4,2.9],'pff')+R([2.9,0,3.5,1.8],'pff')+`<line class="pdash" x1="${X(3.2)}" y1="${Y(0)}" x2="${X(3.2)}" y2="${Y(1.8)}"/>`;
+    s+=bed([6.21,0.6,7.11,2.5])+R([6.71,2.5,7.11,2.9],'pff')+R([3.6,0,4.2,1.8],'pff')+`<line class="pdash" x1="${X(3.9)}" y1="${Y(0)}" x2="${X(3.9)}" y2="${Y(1.8)}"/>`;
+    s+=lbl(1.9,2.4,'Dormitorio 2','10,5 m²')+lbl(5.15,2.4,'Dormitorio 3','10,5 m²')+lbl(1.85,4.62,'','vacío + claraboya');
+    s+=R([0.4,6.8,2.4,7.6],'pff','rx="3"')+R([4.8,5.4,6.8,6.0],'pff','rx="2"');
+    s+=lbl(3.6,6.6,'Playroom o dormitorio 4','21,3 m²');
+  }
+  s+=dimH(0,W,-0.85,'7,11')+dimV(0,3.00,7.65,'3,00')+dimV(3.10,4.90,7.65,'1,80')+dimV(5.00,8.00,7.65,'3,00');
+  if(lv==='pb') s+=dimV(8.20,14.25,7.65,'6,05');
+  s+=dimH(0,SX,14.9,'2,77')+dimH(SX,4.30,14.9,'1,53')+dimH(4.40,W,14.9,'2,71');
+  if(lv!=='pb') s+=dimH(0,3.50,15.6,'3,50')+dimH(3.60,W,15.6,'3,51');
+  s+=`<g transform="translate(${X(8.0)},${Y(-0.55)}) rotate(45)"><circle r="14" style="fill:none;stroke:var(--ink2);stroke-width:.8"/><path d="M0 -12 L5 6 L0 2 L-5 6 Z" style="fill:var(--ink)"/></g><text class="plbl" x="${X(8.0)+18}" y="${Y(-0.55)-10}">N</text>`;
+  return `<svg viewBox="0 0 ${X(7.26)+120} ${Y(Hm)}" role="img" aria-label="Planta de la casa tipo">${s}</svg>`;
+}
+function implant(){
+  const s=19,ox=60,oy=50,L=42.5,Wl=8.66;const x=v=>+(ox+v*s).toFixed(1),y=v=>+(oy+v*s).toFixed(1);
+  const rr=(a,b,c,d,cl,ex='')=>`<rect class="${cl}" x="${x(a)}" y="${y(b)}" width="${+((c-a)*s).toFixed(1)}" height="${+((d-b)*s).toFixed(1)}" ${ex}/>`;
+  const Wd=Math.round(x(L)+60),H=Math.round(y(Wl)+110);
+  let o=`<rect style="fill:var(--paper)" x="0" y="0" width="${Wd}" height="${H}"/>`;
+  o+=`<text class="psub" transform="translate(${x(-1.3)},${y(Wl/2)}) rotate(-90)" text-anchor="middle">Calle Donado · frente NE</text>`;
+  o+=rr(0,0,L,0.15,'pw')+rr(0,8.51,L,8.66,'pw')+rr(42.35,0,L,8.66,'pw');
+  [[0,8.40],[14.45,22.85],[28.90,37.30]].forEach(([a,b],i)=>{o+=rr(a,0.15,b,7.41,'pff','style="fill:#eceef1;stroke:var(--ink);stroke-width:1.2"');
+    o+=`<text class="plbl" x="${x((a+b)/2)}" y="${y(3.6)}" text-anchor="middle">Casa ${i+1}</text><text class="psub" x="${x((a+b)/2)}" y="${y(3.6)+15}" text-anchor="middle">PB + 2 · 183 m²</text>`;
+    o+=rr(a+0.80,7.01,a+2.30,7.41,'pff','style="fill:#f7e3d6;stroke:var(--brick)"');});
+  [[8.40,14.45],[22.85,28.90]].forEach(([a,b],i)=>{o+=rr(a,0.15,b,7.26,'pff')+rr(b-4.0,0.15,b,2.15,'pwater')+rr(a,7.26,b,7.41,'pw');
+    o+=`<text class="psub" x="${x((a+b)/2)-8}" y="${y(4.6)}" text-anchor="middle">Patio casa ${i+1}</text><text class="psub" x="${x((a+b)/2)-8}" y="${y(4.6)+14}" text-anchor="middle">6,05 × 7,11</text>`;});
+  o+=rr(37.30,0.15,42.35,8.51,'pff')+rr(38.35,0.15,42.35,2.15,'pwater')+`<text class="psub" x="${x(39.8)}" y="${y(4.6)}" text-anchor="middle">Fondo libre · casa 3</text><text class="psub" x="${x(39.8)}" y="${y(4.6)+14}" text-anchor="middle">5,05 m</text>`;
+  o+=rr(0,7.41,31.20,8.51,'pdash')+`<text class="psub" x="${x(17)}" y="${y(8.1)}" text-anchor="middle">Pasillo común 1,10 m</text>`;
+  o+=rr(31.20,7.41,37.30,8.51,'pgreen')+rr(31.10,7.41,31.20,8.51,'pw')+`<text class="psub" x="${x(34.25)}" y="${y(8.66)+14}" text-anchor="middle">franja de la casa 3</text>`;
+  o+=rr(0,7.41,0.15,8.51,'pff','style="fill:#1b1c1e"')+`<text class="psub" x="${x(0)}" y="${y(8.66)+14}">Portón y medidores</text>`;
+  o+=`<line x1="${x(38.5)}" x2="${x(38.5)}" y1="${y(0)-8}" y2="${y(8.66)+8}" style="stroke:#a3262a;stroke-dasharray:5 4"/><text class="pdt" x="${x(38.5)}" y="${y(0)-12}" text-anchor="middle">límite 38,50 (4 m del fondo)</text>`;
+  o+=`<text class="psub" x="${x(21)}" y="${y(0)-12}" text-anchor="middle">Lindero NO</text>`;
+  const yy=y(Wl)+40;let cx=0;[[8.40,'8,40'],[6.05,'6,05'],[8.40,'8,40'],[6.05,'6,05'],[8.40,'8,40'],[5.05,'5,05'],[0.15,'']].forEach(([d,t])=>{o+=`<line class="pdim" x1="${x(cx)}" y1="${yy}" x2="${x(cx+d)}" y2="${yy}"/><line class="pdim" x1="${x(cx)}" y1="${yy-5}" x2="${x(cx)}" y2="${yy+5}"/>`+(t?`<text class="pdt" x="${x(cx+d/2)}" y="${yy-6}" text-anchor="middle">${t}</text>`:'');cx+=d;});
+  o+=`<line class="pdim" x1="${x(L)}" y1="${yy-5}" x2="${x(L)}" y2="${yy+5}"/><text class="pdt" x="${x(L/2)}" y="${yy+20}" text-anchor="middle">8,40 + 6,05 + 8,40 + 6,05 + 8,40 + 5,05 + 0,15 = 42,50</text>`;
+  o+=`<line class="pdim" x1="${x(L)+22}" y1="${y(0)}" x2="${x(L)+22}" y2="${y(Wl)}"/><text class="pdt" transform="translate(${x(L)+36},${y(Wl/2)}) rotate(90)" text-anchor="middle">8,66</text>`;
+  o+=`<rect x="${x(0)}" y="${yy+34}" width="12" height="12" style="fill:#f7e3d6;stroke:var(--brick)"/><text class="psub" x="${x(0)+18}" y="${yy+44}">Entrada con ensanche Ø 1,50</text><rect class="pwater" x="${x(12)}" y="${yy+34}" width="12" height="12"/><text class="psub" x="${x(12)+18}" y="${yy+44}">Pileta 2,00 × 4,00</text>`;
+  return `<svg class="wide" viewBox="0 0 ${Wd} ${H+20}" role="img" aria-label="Implantación de 3 casas en fila con patios y pasillo">${o}</svg>`;
+}
+function corte(){
+  const s=19,ox=60,top=15.8,oy=20+top*s;const x=v=>+(ox+v*s).toFixed(1),y=z=>+(oy-z*s).toFixed(1);
+  const rr=(a,z0,b,z1,cl,ex='')=>`<rect class="${cl}" x="${x(a)}" y="${y(z1)}" width="${+((b-a)*s).toFixed(1)}" height="${+((z1-z0)*s).toFixed(1)}" ${ex}/>`;
+  const Wd=Math.round(x(42.5)+120),H=Math.round(y(-1.6)+40);
+  let o=`<rect style="fill:var(--paper)" x="0" y="0" width="${Wd}" height="${H}"/>`;
+  o+=`<line style="stroke:var(--ink);stroke-width:1.4" x1="${x(-1)}" y1="${y(0)}" x2="${x(43.5)}" y2="${y(0)}"/>`;
+  [[0,8.40],[14.45,22.85],[28.90,37.30]].forEach(([a,b],i)=>{o+=rr(a,0,a+0.2,9.04,'pw')+rr(b-0.2,0,b,9.04,'pw');
+    [2.63,5.51,8.39].forEach(z=>o+=rr(a,z,b,z+0.25,'pw'));
+    o+=rr(a+0.05,0.3,a+0.15,2.4,'pwin')+rr(b-0.15,0,b-0.05,2.4,'pwin');
+    [2.88,5.76].forEach(z=>o+=rr(b-0.15,z+0.9,b-0.05,z+2.3,'pwin')+rr(a+0.05,z+0.9,a+0.15,z+2.1,'pwin'));
+    o+=`<text class="psub" x="${x((a+b)/2)}" y="${y(1.2)}" text-anchor="middle">Social</text><text class="psub" x="${x((a+b)/2)}" y="${y(4.1)}" text-anchor="middle">Suite</text><text class="psub" x="${x((a+b)/2)}" y="${y(7.0)}" text-anchor="middle">Chicos</text><text class="plbl" x="${x((a+b)/2)}" y="${y(9.04)-6}" text-anchor="middle">Casa ${i+1}</text>`;});
+  [[8.40,14.45],[22.85,28.90]].forEach(([a,b])=>{o+=rr(b-4.0,-1.4,b,0,'pwater')+`<line class="pdim" x1="${x(a)}" y1="${y(-1.6)}" x2="${x(b)}" y2="${y(-1.6)}"/><text class="pdt" x="${x((a+b)/2)}" y="${y(-1.6)+14}" text-anchor="middle">6,05</text>`;});
+  o+=rr(38.3,-1.4,42.3,0,'pwater')+rr(42.35,0,42.5,2.5,'pw');
+  o+=`<line class="pdash" style="stroke:#a3262a" x1="${x(-1)}" y1="${y(14.6)}" x2="${x(43.5)}" y2="${y(14.6)}"/><text class="pdt" x="${x(-0.8)}" y="${y(14.6)-5}">+14,60 plano límite</text>`;
+  [[0,'±0,00'],[2.88,'+2,88'],[5.76,'+5,76'],[8.64,'+8,64'],[9.04,'+9,04']].forEach(([z,t])=>o+=`<line class="pdim" style="stroke-dasharray:2 3" x1="${x(37.4)}" y1="${y(z)}" x2="${x(42.7)}" y2="${y(z)}"/><text class="pdt" x="${x(42.8)}" y="${y(z)+4}">${t}</text>`);
+  const tw=Math.tan(41.4*Math.PI/180);o+=`<line class="psun" x1="${x(6.4)}" y1="${y(9.04+2.0*tw)}" x2="${x(14.45)}" y2="${y(9.04-6.05*tw)}"/><text class="ptxt-sun" x="${x(4.6)}" y="${y(9.04+2.0*tw)-4}">invierno 12 h</text>`;
+  o+=`<text class="pdt" x="${x(11.4)}" y="${y(12.4)}" text-anchor="middle">h/d = 9,04 / 6,05 = 1,49</text>`;
+  return `<svg class="wide" viewBox="0 0 ${Wd} ${H}" role="img" aria-label="Corte longitudinal con 3 casas de 9,04 m y patios de 6,05 m">${o}</svg>`;
+}
+function energia(){
+  const G=[102,102,104,118,131,177,193,177,147,118,104,103],E=[79,79,81,110,128,197,218,197,149,110,81,80],mes=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+  const W=560,H=250,l=52,r=20,t=12,b=30,iw=W-l-r,ih=H-t-b;const X=i=>l+i/11*iw,Y=v=>t+(240-v)/240*ih;
+  let s='';for(let v=0;v<=240;v+=60)s+=`<line x1="${l}" x2="${l+iw}" y1="${Y(v)}" y2="${Y(v)}" stroke="${v?'var(--grid)':'var(--axis)'}"/><text class="ax" x="${l-6}" y="${Y(v)+4}" text-anchor="end">$${v}k</text>`;
+  mes.forEach((m,i)=>s+=`<text class="ax" x="${X(i)}" y="${H-10}" text-anchor="middle">${m}</text>`);
+  const p=a=>a.map((v,i)=>`${i?'L':'M'}${X(i).toFixed(1)} ${Y(v).toFixed(1)}`).join(' ');
+  s+=`<path d="${p(G)}" fill="none" stroke="var(--s2)" stroke-width="2.4"/><path d="${p(E)}" fill="none" stroke="var(--s1)" stroke-width="2.4"/>`;
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Factura mensual: con gas entre 102 y 193 mil pesos, eléctrica entre 79 y 218 mil">${s}</svg>`;
+}
+function opciones(){
+  const d=[['3 casas · 3 plantas (a 2.500/m²)',-10,1],['3 casas · 4 plantas',-54],['3 casas · 3 plantas (a 2.400/m²)',-56,1],['4 casas · 3 plantas',-84],['3 casas · 2 plantas',-105],['4 casas · 2 plantas',-132],['3 casas · 1 planta',-215],['4 casas · 1 planta',-240],['Reciclar los 2 PH',-83]];
+  const W=640,l=230,r=60,t=8,rh=30,iw=W-l-r,H=t+d.length*rh+24;const v0=-290,v1=20;const X=v=>l+(v-v0)/(v1-v0)*iw;
+  let s='';for(let v=-250;v<=0;v+=50)s+=`<line x1="${X(v)}" x2="${X(v)}" y1="${t}" y2="${t+d.length*rh}" stroke="${v?'var(--grid)':'var(--axis)'}"/><text class="ax" x="${X(v)}" y="${H-6}" text-anchor="middle">${v}</text>`;
+  d.forEach(([n,v,hl],i)=>{const y=t+i*rh;s+=`<text x="${l-8}" y="${y+rh/2+4}" text-anchor="end" style="font-family:var(--f-body);font-size:12.5px;fill:var(--fg);font-weight:${hl?600:400}">${n}</text><rect x="${X(v)}" y="${y+7}" width="${X(0)-X(v)}" height="${rh-14}" rx="3" fill="${hl?'var(--crit)':'var(--axis)'}"/><text class="ax" x="${X(v)-6}" y="${y+rh/2+4}" text-anchor="end">${v}</text>`;});
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Resultado neto por opción en miles de dólares, todas negativas">${s}</svg>`;
+}
+function resumen(){
+  const W=700,l=310,r=70,t=10,rh=44,iw=W-l-r;const rows=[['Valor de mercado del terreno',240,280,260,'var(--accent)'],['Lo que paga el proyecto (12 % neto)',51,132,null,'var(--crit)'],['Venderlo como 2 PH usados (piso de los dueños)',196,245,null,'var(--axis)']];
+  const H=t+rows.length*rh+26;const X=v=>l+v/320*iw;let s='';
+  for(let v=0;v<=300;v+=50)s+=`<line x1="${X(v)}" x2="${X(v)}" y1="${t}" y2="${t+rows.length*rh}" stroke="var(--grid)"/><text class="ax" x="${X(v)}" y="${H-6}" text-anchor="middle">${v}</text>`;
+  rows.forEach(([n,a,b,c,col],i)=>{const y=t+i*rh;s+=`<text x="${l-10}" y="${y+rh/2+4}" text-anchor="end" style="font-family:var(--f-body);font-size:12.5px;fill:var(--fg)">${n}</text><rect x="${X(a)}" y="${y+10}" width="${X(b)-X(a)}" height="${rh-20}" rx="4" fill="${col}"/><text class="ax" x="${X(b)+6}" y="${y+rh/2+4}">${a}–${b}</text>`;if(c)s+=`<line x1="${X(c)}" x2="${X(c)}" y1="${y+6}" y2="${y+rh-6}" stroke="var(--bg)" stroke-width="2"/>`;});
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="El terreno vale 240 a 280 mil y el proyecto puede pagar 51 a 132 mil">${s}</svg>`;
+}
+function cascada(){
+  const d=[['Venta de las 3 casas',1372.5,'tot'],['Terreno + gastos de compra',-270.4],['Obra todo incluido',-933.3],['Climatización y agua caliente',-20.7],['Permisos, demolición, mensura',-31.1],['Comisión de venta',-54.9],['Ingresos Brutos',-41.2],['IVA',-31.2],['Resultado',-10.3,'res']];
+  const W=640,l=230,r=60,t=8,rh=30,iw=W-l-r,H=t+d.length*rh+24;const X=v=>l+(v+40)/1440*iw;let s='',run=0;
+  for(let v=0;v<=1400;v+=200)s+=`<line x1="${X(v)}" x2="${X(v)}" y1="${t}" y2="${t+d.length*rh}" stroke="var(--grid)"/><text class="ax" x="${X(v)}" y="${H-6}" text-anchor="middle">${v}</text>`;
+  d.forEach(([n,v,k],i)=>{const y=t+i*rh;let a,b,col;if(k==='tot'){a=0;b=v;run=v;col='var(--accent)';}else if(k==='res'){a=Math.min(0,v);b=Math.max(0,v);col='var(--crit)';}else{a=run+v;b=run;run=a;col='var(--axis)';}
+    s+=`<text x="${l-8}" y="${y+rh/2+4}" text-anchor="end" style="font-family:var(--f-body);font-size:12.5px;fill:var(--fg)">${n}</text><rect x="${X(a)}" y="${y+7}" width="${Math.max(3,X(b)-X(a))}" height="${rh-14}" rx="3" fill="${col}"/><text class="ax" x="${X(Math.max(a,b))+6}" y="${y+rh/2+4}">${v>0?'':'−'}${Math.abs(v).toLocaleString('es-AR',{maximumFractionDigits:1})}</text>`;});
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="De 1.372 mil de venta queda un resultado de menos 10 mil">${s}</svg>`;
+}
+function barras(d,max,W){W=W||640;const l=270,r=70,t=8,rh=30,iw=W-l-r,H=t+d.length*rh+24;const X=v=>l+v/max*iw;let s='';
+  for(let v=0;v<=max;v+=max/5)s+=`<line x1="${X(v)}" x2="${X(v)}" y1="${t}" y2="${t+d.length*rh}" stroke="var(--grid)"/><text class="ax" x="${X(v)}" y="${H-6}" text-anchor="middle">${Math.round(v)}</text>`;
+  d.forEach(([n,v,hl],i)=>{const y=t+i*rh;s+=`<text x="${l-8}" y="${y+rh/2+4}" text-anchor="end" style="font-family:var(--f-body);font-size:12.5px;fill:var(--fg);font-weight:${hl?600:400}">${n}</text><rect x="${X(0)}" y="${y+7}" width="${Math.max(2,X(v)-X(0))}" height="${rh-14}" rx="3" fill="${hl?'var(--accent)':'var(--axis)'}"/><text class="ax" x="${X(v)+6}" y="${y+rh/2+4}">${v.toLocaleString('es-AR',{maximumFractionDigits:1})}</text>`;});
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Gráfico de barras">${s}</svg>`;}
+put('ch-costos',()=>barras([['Materiales',450.3],['Mano de obra',368.4,1],['Imprevistos',40.9],['Arquitecto (proyecto y permisos)',32.7,1],['Dirección de obra',32.7,1],['Ingeniero calculista',8.2]],500));
+put('ch-gremios',()=>barras([['Albañilería y estructura',184.2],['Instalación sanitaria y agua',36.8],['Revoques y yeso',36.8],['Electricidad',29.5],['Microcemento y pisos',29.5],['Pintura',18.4],['Pileta',18.4],['Carpinterías y herrería (colocación)',14.7]],200,600));
+put('ch-resumen',resumen);put('ch-cascada',cascada);
+put('ch-opciones',opciones);
+put('s-imp',implant);put('s-pb',()=>plan('pb'));put('s-p1',()=>plan('p1'));put('s-p2',()=>plan('p2'));put('s-corte',corte);put('ch-energia',energia);
+})();
+</script>
+
+</body>
+</html>
